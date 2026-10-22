@@ -1,28 +1,20 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Nation } from '../../models/continent.model';
+import { CommissarioDto, NazioneDto } from '../../api/models';
+import { TranslocoDirective } from '@jsverse/transloco';
 
 @Component({
     selector: 'app-surveyor-modal',
-    imports: [CommonModule],
+    imports: [CommonModule, TranslocoDirective],
     templateUrl: './surveyor-modal.html',
     styles: ``,
 })
 export class SurveyorModalComponent {
-    @Input() nation: Nation | null = null;
+    @Input() nation: NazioneDto | null = null;
+    @Input() commissioners: CommissarioDto[] = [];
     @Output() close = new EventEmitter<void>();
 
-    dispatchSuccess = false;
-
     onClose(): void {
-        this.dispatchSuccess = false;
         this.close.emit();
-    }
-
-    requestUrgentDispatch(): void {
-        this.dispatchSuccess = true;
-        setTimeout(() => {
-            this.dispatchSuccess = false;
-        }, 4000);
     }
 }

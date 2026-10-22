@@ -1,5 +1,6 @@
 <header
   class="sticky top-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 text-white"
+  *transloco="let t"
 >
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-8">
     <!-- Zone 1: Wordmark -->
@@ -11,49 +12,43 @@
         class="w-8 h-8 rounded bg-blue-600 flex items-center justify-center text-white font-mono font-bold text-sm"
         >CA</span
       >
-      <span>Commissari d'Avaria</span>
+      <span>{{ t('app.title') }}</span>
     </a>
 
     <!-- Zone 2: Navigation Links (Continents) -->
     <nav class="hidden lg:flex items-center gap-5 text-sm font-medium text-slate-300">
       <a routerLink="/" class="hover:text-white transition-colors whitespace-nowrap shrink-0">
-        Mappa Mondiale
+        {{ t('nav.map') }}
       </a>
       <a
         routerLink="/continent/europa"
         class="hover:text-white transition-colors whitespace-nowrap shrink-0"
       >
-        Europa
+        {{ t('continents.europa') }}
       </a>
       <a
         routerLink="/continent/asia"
         class="hover:text-white transition-colors whitespace-nowrap shrink-0"
       >
-        Asia
+        {{ t('continents.asia') }}
       </a>
       <a
-        routerLink="/continent/america-nord"
+        routerLink="/continent/america"
         class="hover:text-white transition-colors whitespace-nowrap shrink-0"
       >
-        America del Nord
-      </a>
-      <a
-        routerLink="/continent/america-sud"
-        class="hover:text-white transition-colors whitespace-nowrap shrink-0"
-      >
-        America del Sud
+        {{ t('continents.america') }}
       </a>
       <a
         routerLink="/continent/africa"
         class="hover:text-white transition-colors whitespace-nowrap shrink-0"
       >
-        Africa
+        {{ t('continents.africa') }}
       </a>
       <a
         routerLink="/continent/oceania"
         class="hover:text-white transition-colors whitespace-nowrap shrink-0"
       >
-        Oceania
+        {{ t('continents.oceania') }}
       </a>
     </nav>
 
@@ -62,9 +57,15 @@
       <button
         type="button"
         (click)="toggleLanguage()"
+        [attr.aria-label]="
+          currentLang === 'it' ? t('language.switchToEnglish') : t('language.switchToItalian')
+        "
+        [attr.title]="
+          currentLang === 'it' ? t('language.switchToEnglish') : t('language.switchToItalian')
+        "
         class="px-2.5 py-1 text-xs font-mono font-semibold rounded border border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 transition-colors whitespace-nowrap shrink-0 uppercase"
       >
-        {{ currentLang }}
+        {{ currentLang === 'it' ? 'EN' : 'IT' }}
       </button>
 
     </div>

@@ -2,10 +2,11 @@ import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { LanguageService } from '../../services/language-service';
 import { CommonModule } from '@angular/common';
+import { TranslocoDirective } from '@jsverse/transloco';
 
 @Component({
     selector: 'app-header',
-    imports: [CommonModule, RouterLink],
+    imports: [CommonModule, RouterLink, TranslocoDirective],
     templateUrl: './header.html',
     styles: ``,
 })

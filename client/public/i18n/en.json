@@ -1,26 +1,99 @@
 {
   "app": {
-    "title": "Average Adjusters",
-    "subtitle": "Global Network of Marine Cargo Surveyors & Average Adjusters"
+    "title": "Average Adjusters"
+  },
+  "pageTitle": {
+    "home": "Global Average Adjusters Network | Average Adjusters",
+    "notFound": "Page not found | Average Adjusters"
+  },
+  "language": {
+    "switchToEnglish": "Switch language to English",
+    "switchToItalian": "Switch language to Italian"
   },
   "nav": {
-    "map": "Global Map",
-    "continents": "Continents",
-    "services": "Survey Services",
-    "normative": "Regulatory Framework",
-    "urgentDispatch": "24/7 Rapid Response"
+    "map": "Global map"
+  },
+  "continents": {
+    "europa": "Europe",
+    "asia": "Asia",
+    "america": "America",
+    "africa": "Africa",
+    "oceania": "Oceania"
+  },
+  "home": {
+    "eyebrow": "Marine surveys around the world",
+    "title": "Global Average Adjusters Network",
+    "commissioners": "Commissioners",
+    "heroImageAlt": "Commercial maritime port and survey fleet"
+  },
+  "map": {
+    "title": "Global geographic network",
+    "subtitle": "Select a continent to browse its countries",
+    "northAmerica": "North America",
+    "southAmerica": "South America",
+    "clickToOpen": "Click to open",
+    "selectableContinent": "Selectable continent"
+  },
+  "quickSearch": {
+    "placeholder": "Search for a country...",
+    "resultsFound": "countries found"
+  },
+  "continentPage": {
+    "filterPlaceholder": "Filter countries in",
+    "loading": "Loading countries...",
+    "showCommissioners": "Show commissioners",
+    "noNations": "No countries found",
+    "noNationsDescription": "No countries match the search criteria"
+  },
+  "commissioner": {
+    "title": "Commissioners in",
+    "countryCode": "Country code",
+    "address": "Address",
+    "phone": "Phone",
+    "mobile": "Mobile",
+    "email": "Email",
+    "website": "Website",
+    "fax": "Fax",
+    "telex": "Telex",
+    "telegraph": "Telegraph",
+    "notes": "Notes",
+    "noneAvailable": "No commissioners are available for this country."
+  },
+  "footer": {
+    "description": "International network of average adjusters and marine surveyors. Support for cargo and vessel damage surveys.",
+    "references": "References and regulations",
+    "yorkAntwerp": "York-Antwerp Rules (YAR)",
+    "navigationCode": "Navigation Code (Articles 511–547)",
+    "salvageForm": "Lloyd's Standard Form of Salvage (LOF)",
+    "brusselsConvention": "Brussels Convention (Bills of Lading)",
+    "offices": "Coordination offices",
+    "genovaOffice": "Genoa (Mediterranean headquarters)",
+    "rotterdamOffice": "Rotterdam (Northern Europe)",
+    "singaporeOffice": "Singapore (Asia-Pacific hub)",
+    "newYorkOffice": "New York (Americas Maritime Center)",
+    "rights": "All rights reserved",
+    "confidentiality": "Confidentiality and professional ethics",
+    "accreditation": "Accreditation requirements"
   },
   "errors": {
     "pageNotFound": {
       "title": "Oops! Page not found",
-      "description": "It seems the page you are looking for has been moved or does not exist."
+      "description": "The page you are looking for may have moved or no longer exists."
     }
   },
   "common": {
-    "backToHome": "Back to Home",
+    "backToHome": "Back to home",
     "explore": "Explore",
+    "open": "Open",
+    "close": "Close",
+    "closeDetails": "Close details",
+    "retry": "Retry",
+    "loadError": "Unable to load data",
+    "commissioner": "Commissioner",
+    "commissioners": "Commissioners",
+    "continents": "Continents",
+    "nations": "Countries",
     "surveyors": "Surveyors",
-    "ports": "Ports",
-    "nations": "Nations"
+    "ports": "Ports"
   }
 }

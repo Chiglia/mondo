@@ -1,101 +1,147 @@
 @if (nation) {
+  <ng-container *transloco="let t">
   <div
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-150"
+    (click)="onClose()"
   >
-    <div
-      class="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden"
+    <section
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-label]="t('commissioner.title') + ' ' + nation.descrizione"
+      class="relative w-full max-w-3xl max-h-[90vh] bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col"
+      (click)="$event.stopPropagation()"
     >
-      <!-- Modal Header -->
-      <div class="px-6 py-5 bg-slate-900 text-white flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <span class="text-3xl">{{ nation.flagEmoji }}</span>
-          <div>
-            <h3 class="text-lg font-bold">{{ nation.name }}</h3>
-            <p class="text-xs text-slate-300">Desk Peritale & Ufficio Commissari d'Avaria</p>
-          </div>
+      <header class="px-6 py-5 bg-slate-900 text-white flex items-center justify-between shrink-0">
+        <div>
+          <h2 class="text-lg font-bold">{{ nation.descrizione }}</h2>
+          <p class="text-xs text-slate-300">
+            {{ commissioners.length }}
+            {{ commissioners.length === 1 ? t('common.commissioner') : t('common.commissioners') }}
+            @if (nation.codice) {
+              <span>· {{ nation.codice }}</span>
+            }
+          </p>
         </div>
         <button
           type="button"
           (click)="onClose()"
+          [attr.aria-label]="t('common.closeDetails')"
           class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
         >
           <i class="pi pi-times text-sm"></i>
         </button>
-      </div>
+      </header>
 
-      <!-- Modal Body -->
-      <div class="p-6 space-y-5 text-sm text-slate-700">
-        <!-- Contact Person -->
-        <div class="border-b border-slate-100 pb-4">
-          <span class="text-xs font-mono text-slate-500 uppercase">Referente Commissario Capo</span>
-          <div class="text-base font-bold text-slate-900 mt-0.5">{{ nation.desk.contactName }}</div>
-          <div class="text-xs text-slate-600">{{ nation.desk.role }}</div>
-        </div>
+      <div class="p-6 space-y-4 overflow-y-auto">
+        @if (commissioners.length > 0) {
+          @for (commissioner of commissioners; track $index) {
+            <article class="border border-slate-200 rounded-xl p-5 space-y-4">
+              <div>
+                <h3 class="text-base font-bold text-slate-900">
+                  {{ commissioner.ragioneSociale || t('common.commissioner') }}
+                </h3>
+                @if (commissioner.zona) {
+                  <p class="text-sm text-slate-500">{{ commissioner.zona }}</p>
+                }
+              </div>
 
-        <!-- Direct Contacts -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-          <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
-            <span class="text-slate-500 font-medium">Telefono Ufficio:</span>
-            <div class="font-mono font-semibold text-slate-900 mt-0.5">{{ nation.desk.phone }}</div>
-          </div>
-          <div class="bg-red-50 p-3 rounded-lg border border-red-100">
-            <span class="text-red-700 font-medium">Emergenza H24 Avarie:</span>
-            <div class="font-mono font-bold text-red-900 mt-0.5">
-              {{ nation.desk.emergency24h }}
-            </div>
-          </div>
-        </div>
-
-        <div class="text-xs">
-          <span class="text-slate-500 font-medium">Email Ufficiale:</span>
-          <div class="font-mono text-blue-600 font-semibold mt-0.5">{{ nation.desk.email }}</div>
-        </div>
-
-        <div class="text-xs">
-          <span class="text-slate-500 font-medium">Indirizzo Sede Portuale:</span>
-          <div class="text-slate-800 mt-0.5">{{ nation.desk.address }}</div>
-        </div>
-
-        <!-- Accreditations without pills -->
-        <div class="text-xs border-t border-slate-100 pt-3">
-          <span class="text-slate-500 font-medium">Abilitazioni e Iscrizioni:</span>
-          <div class="mt-1 text-slate-700 font-mono text-[11px]">
-            {{ nation.desk.certifications.join(' · ') }}
-          </div>
-        </div>
-
-        <!-- Success notification -->
-        @if (dispatchSuccess) {
-          <div
-            class="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-800 text-xs font-medium flex items-center gap-2"
-          >
-            <i class="pi pi-check-circle text-emerald-600"></i>
-            Richiesta di intervento inoltrata con successo al Desk Peritale. Tempo stimato di
-            contatto: entro {{ nation.averageResponseHours }} ore.
-          </div>
+              <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                @if (commissioner.codiceNazione) {
+                  <div>
+                    <dt class="text-xs font-medium text-slate-500">{{ t('commissioner.countryCode') }}</dt>
+                    <dd class="mt-0.5 text-slate-800">{{ commissioner.codiceNazione }}</dd>
+                  </div>
+                }
+                @if (commissioner.indirizzo || commissioner.dettaglioIndirizzo || commissioner.citta || commissioner.cap) {
+                  <div class="sm:col-span-2">
+                    <dt class="text-xs font-medium text-slate-500">{{ t('commissioner.address') }}</dt>
+                    <dd class="mt-0.5 text-slate-800">
+                      @if (commissioner.indirizzo) { {{ commissioner.indirizzo }} }
+                      @if (commissioner.dettaglioIndirizzo) { · {{ commissioner.dettaglioIndirizzo }} }
+                      @if (commissioner.citta) { · {{ commissioner.citta }} }
+                      @if (commissioner.cap) { · {{ commissioner.cap }} }
+                    </dd>
+                  </div>
+                }
+                @if (commissioner.telefono) {
+                  <div>
+                    <dt class="text-xs font-medium text-slate-500">{{ t('commissioner.phone') }}</dt>
+                    <dd class="mt-0.5 text-slate-800">{{ commissioner.telefono }}</dd>
+                  </div>
+                }
+                @if (commissioner.cellulare) {
+                  <div>
+                    <dt class="text-xs font-medium text-slate-500">{{ t('commissioner.mobile') }}</dt>
+                    <dd class="mt-0.5 text-slate-800">{{ commissioner.cellulare }}</dd>
+                  </div>
+                }
+                @if (commissioner.email) {
+                  <div>
+                    <dt class="text-xs font-medium text-slate-500">{{ t('commissioner.email') }}</dt>
+                    <dd class="mt-0.5">
+                      <a class="text-blue-600 hover:underline" [href]="'mailto:' + commissioner.email">
+                        {{ commissioner.email }}
+                      </a>
+                    </dd>
+                  </div>
+                }
+                @if (commissioner.sitoWeb) {
+                  <div>
+                    <dt class="text-xs font-medium text-slate-500">{{ t('commissioner.website') }}</dt>
+                    <dd class="mt-0.5">
+                      <a
+                        class="text-blue-600 hover:underline"
+                        [href]="commissioner.sitoWeb"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {{ commissioner.sitoWeb }}
+                      </a>
+                    </dd>
+                  </div>
+                }
+                @if (commissioner.fax) {
+                  <div>
+                    <dt class="text-xs font-medium text-slate-500">{{ t('commissioner.fax') }}</dt>
+                    <dd class="mt-0.5 text-slate-800">{{ commissioner.fax }}</dd>
+                  </div>
+                }
+                @if (commissioner.telex) {
+                  <div>
+                    <dt class="text-xs font-medium text-slate-500">{{ t('commissioner.telex') }}</dt>
+                    <dd class="mt-0.5 text-slate-800">{{ commissioner.telex }}</dd>
+                  </div>
+                }
+                @if (commissioner.telegrafo) {
+                  <div>
+                    <dt class="text-xs font-medium text-slate-500">{{ t('commissioner.telegraph') }}</dt>
+                    <dd class="mt-0.5 text-slate-800">{{ commissioner.telegrafo }}</dd>
+                  </div>
+                }
+                @if (commissioner.note) {
+                  <div class="sm:col-span-2">
+                    <dt class="text-xs font-medium text-slate-500">{{ t('commissioner.notes') }}</dt>
+                    <dd class="mt-0.5 text-slate-800">{{ commissioner.note }}</dd>
+                  </div>
+                }
+              </dl>
+            </article>
+          }
+        } @else {
+          <p class="text-sm text-slate-500">{{ t('commissioner.noneAvailable') }}</p>
         }
       </div>
 
-      <!-- Modal Footer -->
-      <div
-        class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-3"
-      >
+      <footer class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-end shrink-0">
         <button
           type="button"
           (click)="onClose()"
           class="px-4 py-2 text-xs font-medium text-slate-700 hover:text-slate-900 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
         >
-          Chiudi
+          {{ t('common.close') }}
         </button>
-
-        <button
-          type="button"
-          (click)="requestUrgentDispatch()"
-          class="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors cursor-pointer shadow-sm"
-        >
-          Invia Mandato di Perizia
-        </button>
-      </div>
-    </div>
+      </footer>
+    </section>
   </div>
+  </ng-container>
 }

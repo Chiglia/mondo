@@ -1,26 +1,99 @@
 {
   "app": {
-    "title": "Commissari d'Avaria",
-    "subtitle": "Rete Globale di Periti Marittimi e Regolatori d'Avaria"
+    "title": "Commissari d'Avaria"
+  },
+  "pageTitle": {
+    "home": "Rete globale dei Commissari d'Avaria | Commissari d'Avaria",
+    "notFound": "Pagina non trovata | Commissari d'Avaria"
+  },
+  "language": {
+    "switchToEnglish": "Cambia la lingua in inglese",
+    "switchToItalian": "Cambia la lingua in italiano"
   },
   "nav": {
-    "map": "Mappa Globale",
-    "continents": "Continenti",
-    "services": "Servizi Peritali",
-    "normative": "Quadro Normativo",
-    "urgentDispatch": "Pronto Intervento H24"
+    "map": "Mappa globale"
+  },
+  "continents": {
+    "europa": "Europa",
+    "asia": "Asia",
+    "america": "America",
+    "africa": "Africa",
+    "oceania": "Oceania"
+  },
+  "home": {
+    "eyebrow": "Perizie marittime in tutto il mondo",
+    "title": "Rete globale dei Commissari d'Avaria",
+    "commissioners": "Commissari",
+    "heroImageAlt": "Nave e porto commerciale"
+  },
+  "map": {
+    "title": "Rete geografica mondiale",
+    "subtitle": "Seleziona un continente per consultare le nazioni",
+    "northAmerica": "America del Nord",
+    "southAmerica": "America del Sud",
+    "clickToOpen": "Clicca per aprire",
+    "selectableContinent": "Continente selezionabile"
+  },
+  "quickSearch": {
+    "placeholder": "Cerca una nazione...",
+    "resultsFound": "nazioni trovate"
+  },
+  "continentPage": {
+    "filterPlaceholder": "Filtra le nazioni in",
+    "loading": "Caricamento delle nazioni...",
+    "showCommissioners": "Mostra commissari",
+    "noNations": "Nessuna nazione trovata",
+    "noNationsDescription": "Nessuna nazione corrisponde al criterio di ricerca"
+  },
+  "commissioner": {
+    "title": "Commissari in",
+    "countryCode": "Codice nazione",
+    "address": "Indirizzo",
+    "phone": "Telefono",
+    "mobile": "Cellulare",
+    "email": "Email",
+    "website": "Sito web",
+    "fax": "Fax",
+    "telex": "Telex",
+    "telegraph": "Telegrafo",
+    "notes": "Note",
+    "noneAvailable": "Nessun commissario disponibile per questa nazione."
+  },
+  "footer": {
+    "description": "Rete internazionale di Commissari d'Avaria e periti marittimi. Supporto per le perizie sui danni al carico e alle navi.",
+    "references": "Fonti e normative",
+    "yorkAntwerp": "Regole di York e Anversa (YAR)",
+    "navigationCode": "Codice della navigazione (art. 511–547)",
+    "salvageForm": "Lloyd's Standard Form of Salvage (LOF)",
+    "brusselsConvention": "Convenzione di Bruxelles (polizze di carico)",
+    "offices": "Uffici di coordinamento",
+    "genovaOffice": "Genova (sede Mediterraneo)",
+    "rotterdamOffice": "Rotterdam (Europa settentrionale)",
+    "singaporeOffice": "Singapore (hub Asia-Pacifico)",
+    "newYorkOffice": "New York (centro marittimo delle Americhe)",
+    "rights": "Tutti i diritti riservati",
+    "confidentiality": "Riservatezza e deontologia peritale",
+    "accreditation": "Requisiti di accreditamento"
   },
   "errors": {
     "pageNotFound": {
-      "title": "Oops! Pagina non trovata",
-      "description": "Sembra che la pagina che stai cercando sia stata spostata o non esista più."
+      "title": "Ops! Pagina non trovata",
+      "description": "La pagina che cerchi potrebbe essere stata spostata o non esistere più."
     }
   },
   "common": {
-    "backToHome": "Torna alla Home",
+    "backToHome": "Torna alla home",
     "explore": "Esplora",
-    "surveyors": "Commissari",
-    "ports": "Porti",
-    "nations": "Nazioni"
+    "open": "Apri",
+    "close": "Chiudi",
+    "closeDetails": "Chiudi i dettagli",
+    "retry": "Riprova",
+    "loadError": "Impossibile caricare i dati",
+    "commissioner": "Commissario",
+    "commissioners": "Commissari",
+    "continents": "Continenti",
+    "nations": "Nazioni",
+    "surveyors": "Periti",
+    "ports": "Porti"
   }
 }

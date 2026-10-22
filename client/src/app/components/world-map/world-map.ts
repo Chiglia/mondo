@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Continent } from '../../models/continent.model';
 import { AvariaService } from '../../services/avaria.service';
+import { TranslocoDirective } from '@jsverse/transloco';
 
 @Component({
     selector: 'app-world-map',
-    imports: [CommonModule],
+    imports: [CommonModule, TranslocoDirective],
     templateUrl: './world-map.html',
     styles: ``,
 })
@@ -19,6 +20,10 @@ export class WorldMapComponent {
     hoveredContinent: Continent | null = null;
 
     readonly continents = this.avariaService.getContinents();
+
+    getApiNationCount(continentId: string): number {
+        return this.avariaService.getApiNationCount(continentId);
+    }
 
     onContinentHover(id: string | null): void {
         if (!id) {

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, effect, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -6,7 +6,10 @@ import { HeaderComponent } from '../../components/header/header';
 import { FooterComponent } from '../../components/footer/footer';
 import { SurveyorModalComponent } from '../../components/surveyor-modal/surveyor-modal';
 import { AvariaService } from '../../services/avaria.service';
-import { Continent, Nation } from '../../models/continent.model';
+import { Continent } from '../../models/continent.model';
+import { CommissarioDto, NazioneDto } from '../../api/models';
+import { TranslocoDirective } from '@jsverse/transloco';
+import { LanguageService } from '../../services/language-service';
 
 @Component({
     selector: 'app-continent',
@@ -17,6 +20,7 @@ import { Continent, Nation } from '../../models/continent.model';
         HeaderComponent,
         FooterComponent,
         SurveyorModalComponent,
+        TranslocoDirective,
     ],
     templateUrl: './continent.html',
     styles: ``,
@@ -25,16 +29,26 @@ export class ContinentPage implements OnInit {
     private route = inject(ActivatedRoute);
     private router = inject(Router);
     private avariaService = inject(AvariaService);
+    private languageService = inject(LanguageService);
 
     continent: Continent | null = null;
-    allNationsInContinent: Nation[] = [];
-    filteredNations: Nation[] = [];
+    allNationsInContinent: NazioneDto[] = [];
+    filteredNations: NazioneDto[] = [];
+    selectedNation: NazioneDto | null = null;
 
     searchTerm = '';
-    selectedSpecialty = 'all';
-    sortBy = 'name'; // 'name' | 'surveyors' | 'speed'
+    readonly isApiDirectoryLoading = this.avariaService.isApiDirectoryLoading;
+    readonly apiDirectoryError = this.avariaService.apiDirectoryError;
 
-    selectedNationForModal: Nation | null = null;
+    constructor() {
+        effect(() => {
+            this.avariaService.apiNationsByContinent();
+            if (this.continent) {
+                this.allNationsInContinent = this.avariaService.getApiNationsByContinent(this.continent.id);
+                this.applyFilters();
+            }
+        });
+    }
 
     ngOnInit(): void {
         this.route.paramMap.subscribe(params => {
@@ -44,15 +58,6 @@ export class ContinentPage implements OnInit {
             }
         });
 
-        this.route.queryParamMap.subscribe(queryParams => {
-            const highlight = queryParams.get('highlight');
-            if (highlight && this.allNationsInContinent.length > 0) {
-                const found = this.allNationsInContinent.find(n => n.id === highlight);
-                if (found) {
-                    this.selectedNationForModal = found;
-                }
-            }
-        });
     }
 
     private loadContinent(id: string): void {
@@ -62,8 +67,12 @@ export class ContinentPage implements OnInit {
             return;
         }
         this.continent = cont;
-        this.allNationsInContinent = this.avariaService.getNationsByContinent(cont.id);
-        this.applyFilters();
+        this.allNationsInContinent = [];
+        this.filteredNations = [];
+        void this.avariaService.loadApiDirectory(this.languageService.currentLang).then(() => {
+            this.allNationsInContinent = this.avariaService.getApiNationsByContinent(cont.id);
+            this.applyFilters();
+        });
     }
 
     applyFilters(): void {
@@ -71,36 +80,36 @@ export class ContinentPage implements OnInit {
         let list = [...this.allNationsInContinent];
 
         if (q) {
-            list = list.filter(n =>
-                n.name.toLowerCase().includes(q) ||
-                n.nameEn.toLowerCase().includes(q) ||
-                n.mainPorts.some(p => p.toLowerCase().includes(q)) ||
-                n.capital.toLowerCase().includes(q)
+            list = list.filter(nation =>
+                nation.descrizione?.toLowerCase().includes(q) ||
+                nation.codice?.toLowerCase().includes(q)
             );
         }
 
-        if (this.selectedSpecialty !== 'all') {
-            list = list.filter(n =>
-                n.specialties.some(s => s.toLowerCase().includes(this.selectedSpecialty.toLowerCase()))
-            );
-        }
-
-        if (this.sortBy === 'surveyors') {
-            list.sort((a, b) => b.activeSurveyors - a.activeSurveyors);
-        } else if (this.sortBy === 'speed') {
-            list.sort((a, b) => a.averageResponseHours - b.averageResponseHours);
-        } else {
-            list.sort((a, b) => a.name.localeCompare(b.name));
-        }
+        list.sort((a, b) => (a.descrizione ?? '').localeCompare(b.descrizione ?? ''));
 
         this.filteredNations = list;
     }
 
-    openSurveyorDesk(nation: Nation): void {
-        this.selectedNationForModal = nation;
+    retryApiDirectoryLoad(): void {
+        void this.avariaService.loadApiDirectory(this.languageService.currentLang).then(() => {
+            if (this.continent) {
+                this.allNationsInContinent = this.avariaService.getApiNationsByContinent(this.continent.id);
+                this.applyFilters();
+            }
+        });
     }
 
-    closeModal(): void {
-        this.selectedNationForModal = null;
+    selectNation(nation: NazioneDto): void {
+        this.selectedNation = nation;
+    }
+
+    closeNationDetails(): void {
+        this.selectedNation = null;
+    }
+
+    getSelectedNationCommissioners(): CommissarioDto[] {
+        const nationCode = this.selectedNation?.codice;
+        return nationCode ? this.avariaService.getApiCommissionersByNation(nationCode) : [];
     }
 }

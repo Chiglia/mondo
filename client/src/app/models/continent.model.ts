@@ -35,8 +35,6 @@ export interface Continent {
     slug: string;
     name: string;
     nameEn: string;
-    description: string;
-    strategicPassages: string[];
     totalSurveyors: number;
     totalPorts: number;
     nationsCount: number;

@@ -1,4 +1,7 @@
-<div class="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-800">
+<div
+  class="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-800"
+  *transloco="let t"
+>
   
   <app-header />
 
@@ -11,41 +14,30 @@
         <div class="flex items-center gap-2 text-xs font-mono text-slate-400 mb-4">
           <a routerLink="/" class="hover:text-white transition-colors flex items-center gap-1.5">
             <i class="pi pi-arrow-left text-[10px]"></i>
-            Mappa Globale
+            {{ t('nav.map') }}
           </a>
           <span class="text-slate-600">/</span>
-          <span class="text-blue-400 font-semibold">{{ continent.name }}</span>
+          <span class="text-blue-400 font-semibold">{{ t('continents.' + continent.id) }}</span>
         </div>
 
         <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div class="max-w-2xl">
             <div class="flex items-center gap-3">
               <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
-                {{ continent.name }}
+                {{ t('continents.' + continent.id) }}
               </h1>
               <span class="w-3 h-3 rounded-full" [style.backgroundColor]="continent.svgColor"></span>
             </div>
             
-            <p class="text-sm sm:text-base text-slate-300 mt-2 leading-relaxed">
-              {{ continent.description }}
-            </p>
-
-            <div class="mt-4 flex flex-wrap items-center gap-2 text-xs text-slate-400">
-              <span class="font-medium text-slate-300">Snodi marittimi primari:</span>
-              <span>{{ continent.strategicPassages.join(' · ') }}</span>
-            </div>
           </div>
 
-          <!-- Quantitative Strip -->
-          <div class="flex items-center gap-6 bg-slate-800/80 border border-slate-700/60 rounded-xl px-5 py-3.5 text-xs tabular-nums shrink-0">
+          <!-- API nation count -->
+          <div class="flex items-center bg-slate-800/80 border border-slate-700/60 rounded-xl px-5 py-3.5 text-xs tabular-nums shrink-0">
             <div>
-              <div class="text-slate-400">Nazioni</div>
-              <div class="text-xl font-bold text-white mt-0.5">{{ allNationsInContinent.length }}</div>
-            </div>
-            <div class="w-px h-8 bg-slate-700"></div>
-            <div>
-              <div class="text-slate-400">Commissari</div>
-              <div class="text-xl font-bold text-blue-400 mt-0.5">{{ continent.totalSurveyors }}</div>
+              <div class="text-slate-400">{{ t('common.nations') }}</div>
+              <div class="text-xl font-bold text-white mt-0.5">
+                {{ isApiDirectoryLoading() ? '…' : allNationsInContinent.length }}
+              </div>
             </div>
           </div>
         </div>
@@ -66,100 +58,64 @@
             type="text" 
             [(ngModel)]="searchTerm" 
             (input)="applyFilters()"
-            placeholder="Filtra nazione o porto marittimo in {{ continent.name }}..."
+            [placeholder]="t('continentPage.filterPlaceholder') + ' ' + t('continents.' + continent.id) + '...'"
             class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
           />
         </div>
-
-        <!-- Sort Select -->
-        <div class="flex items-center gap-2 shrink-0">
-          <label for="sortBy" class="text-xs font-medium text-slate-500 whitespace-nowrap">Ordina per:</label>
-          <select 
-            id="sortBy"
-            [(ngModel)]="sortBy" 
-            (change)="applyFilters()"
-            class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 focus:outline-none focus:border-blue-600 cursor-pointer">
-            <option value="name">Nome (A - Z)</option>
-            <option value="surveyors">Commissari Accreditati</option>
-            <option value="speed">Tempo di Risposta (H24)</option>
-          </select>
-        </div>
-
       </div>
 
       <!-- Nations Grid -->
-      @if (filteredNations.length > 0) {
+      @if (isApiDirectoryLoading()) {
+        <div class="text-center py-16 bg-white border border-slate-200 rounded-xl p-8 text-sm text-slate-500">
+          {{ t('continentPage.loading') }}
+        </div>
+      } @else if (apiDirectoryError()) {
+        <div class="text-center py-16 bg-white border border-red-200 rounded-xl p-8" role="alert">
+          <h3 class="text-base font-bold text-slate-800">{{ t('common.loadError') }}</h3>
+          <p class="text-xs text-slate-500 mt-1">{{ apiDirectoryError() }}</p>
+          <button type="button" (click)="retryApiDirectoryLoad()" class="mt-4 px-3.5 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-lg">
+            {{ t('common.retry') }}
+          </button>
+        </div>
+      } @else if (filteredNations.length > 0) {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          @for (n of filteredNations; track n.id) {
-            <div class="bg-white border border-slate-200 rounded-xl p-6 hover:border-slate-400 hover:shadow-md transition-all flex flex-col justify-between">
-              
-              <div>
-                <!-- Nation Top Bar -->
-                <div class="flex items-start justify-between gap-3 mb-3">
-                  <div class="flex items-center gap-3">
-                    <span class="text-3xl select-none">{{ n.flagEmoji }}</span>
-                    <div>
-                      <h3 class="text-lg font-bold text-slate-900 leading-tight">{{ n.name }}</h3>
-                      <span class="text-xs text-slate-500 font-mono">{{ n.code }} · Cap. {{ n.capital }}</span>
-                    </div>
-                  </div>
-                  <span class="text-xs font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
-                    {{ n.activeSurveyors }} Periti
-                  </span>
+          @for (n of filteredNations; track n.codice) {
+            <button
+              type="button"
+              (click)="selectNation(n)"
+              class="text-left bg-white border border-slate-200 rounded-xl p-6 hover:border-blue-400 hover:shadow-md transition-all cursor-pointer"
+            >
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <h3 class="text-lg font-bold text-slate-900 leading-tight">{{ n.descrizione }}</h3>
+                  @if (n.codice) {
+                    <span class="text-xs text-slate-500 font-mono">{{ n.codice }}</span>
+                  }
                 </div>
-
-                <!-- Ports list -->
-                <div class="mt-4 pt-3 border-t border-slate-100 text-xs">
-                  <span class="text-slate-500 font-medium">Porti Commerciali Monitorati:</span>
-                  <div class="mt-1 text-slate-700 font-medium">
-                    {{ n.mainPorts.join(' · ') }}
-                  </div>
-                </div>
-
-                <!-- Specialties -->
-                <div class="mt-3 text-xs">
-                  <span class="text-slate-500 font-medium">Specialità d'Avaria:</span>
-                  <div class="mt-1 text-slate-600">
-                    {{ n.specialties.join(' · ') }}
-                  </div>
-                </div>
+                <span class="text-xs font-medium text-blue-600">{{ t('continentPage.showCommissioners') }}</span>
               </div>
-
-              <!-- Action Card Bottom -->
-              <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                <span class="text-slate-500 font-mono">
-                  Risposta: <strong class="text-slate-800 font-semibold">{{ n.averageResponseHours }}h</strong>
-                </span>
-
-                <button 
-                  type="button" 
-                  (click)="openSurveyorDesk(n)"
-                  class="px-3.5 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors cursor-pointer shadow-sm">
-                  Consulta Desk
-                </button>
-              </div>
-
-            </div>
+            </button>
           }
         </div>
       } @else {
         <div class="text-center py-16 bg-white border border-slate-200 rounded-xl p-8">
           <i class="pi pi-search text-3xl text-slate-300 mb-3"></i>
-          <h3 class="text-base font-bold text-slate-800">Nessuna nazione trovata</h3>
+          <h3 class="text-base font-bold text-slate-800">{{ t('continentPage.noNations') }}</h3>
           <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-            Nessun risultato corrisponde al criterio di ricerca "{{ searchTerm }}" in questo continente.
+            {{ t('continentPage.noNationsDescription') }} "{{ searchTerm }}".
           </p>
         </div>
       }
 
     </main>
 
-    <!-- MODAL FOR LOCAL DESK -->
-    <app-surveyor-modal 
-      [nation]="selectedNationForModal" 
-      (close)="closeModal()" 
-    />
   }
+
+  <app-surveyor-modal
+    [nation]="selectedNation"
+    [commissioners]="getSelectedNationCommissioners()"
+    (close)="closeNationDetails()"
+  />
 
   <app-footer />
 

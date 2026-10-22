@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslocoDirective } from '@jsverse/transloco';
 
 @Component({
     selector: 'app-footer',
-    imports: [CommonModule],
+    imports: [CommonModule, TranslocoDirective],
     templateUrl: './footer.html',
     styles: ``,
 })
