@@ -1,1 +1,58 @@
-<p>home works!</p>
+<div class="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-800">
+  <app-header />
+
+  <!-- HERO SECTION -->
+  <section class="relative bg-slate-900 text-white overflow-hidden border-b border-slate-800">
+    <div class="absolute inset-0 opacity-20 pointer-events-none">
+      <img
+        src="/assets/images/hero_maritime_survey_1792589834189.jpg"
+        alt="Commercial Maritime Port and Survey Fleet"
+        referrerpolicy="no-referrer"
+        class="w-full h-full object-cover"
+      />
+    </div>
+
+    <div
+      class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 flex flex-col items-center text-center"
+    >
+      <div
+        class="inline-flex items-center gap-2 px-3 py-1 rounded bg-slate-800/80 border border-slate-700 text-xs font-mono text-blue-400 mb-5"
+      >
+        <span>Albo Internazionale Periti & Regolatori Marittimi</span>
+      </div>
+
+      <h1
+        class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white max-w-4xl text-balance"
+      >
+        Rete Globale dei Commissari d'Avaria
+      </h1>
+
+      <!-- Key Quantitative Metrics without pills -->
+      <div
+        class="mt-6 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-300 tabular-nums border-y border-slate-800/80 py-3 max-w-2xl w-full"
+      >
+        <span><strong class="text-white text-sm font-bold">6</strong> Continenti</span>
+        <span aria-hidden="true" class="text-slate-600">·</span>
+        <span
+          ><strong class="text-white text-sm font-bold">{{ totalSurveyors }}</strong> Commissari
+          Accreditati</span
+        >
+      </div>
+
+      <!-- Quick Search Bar embedded in Hero -->
+      <div class="mt-6 w-full max-w-xl">
+        <app-quick-search />
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT CONTAINER (MAP ONLY) -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+    <!-- INTERACTIVE WORLD MAP SECTION -->
+    <section id="mappa-mondo">
+      <app-world-map (continentSelected)="onContinentSelected($event)" />
+    </section>
+  </main>
+
+  <app-footer />
+</div>

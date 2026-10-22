@@ -1,0 +1,62 @@
+<div class="relative w-full max-w-2xl mx-auto">
+  <div class="relative flex items-center">
+    <i class="pi pi-search absolute left-4 text-slate-400 text-sm pointer-events-none"></i>
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      (input)="onSearchChange()"
+      (focus)="isFocused = true"
+      (blur)="isFocused = false"
+      placeholder="Cerca per nazione, porto marittimo (es. Genova, Rotterdam, Shanghai), o specialità..."
+      class="w-full pl-11 pr-10 py-3.5 bg-white border border-slate-300 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm transition-all"
+    />
+    @if (searchTerm) {
+      <button
+        type="button"
+        (click)="clearSearch()"
+        class="absolute right-3 text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
+      >
+        <i class="pi pi-times text-xs"></i>
+      </button>
+    }
+  </div>
+
+  <!-- Live Dropdown Results -->
+  @if (searchResults.length > 0) {
+    <div
+      class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl border border-slate-200 shadow-xl overflow-hidden z-40 max-h-80 overflow-y-auto"
+    >
+      <div class="px-3 py-2 bg-slate-50 border-b border-slate-100 text-xs font-mono text-slate-500">
+        {{ searchResults.length }} Nazioni Trovate
+      </div>
+      @for (item of searchResults; track item.nation.id) {
+        <button
+          type="button"
+          (mousedown)="selectResult(item)"
+          class="w-full text-left px-4 py-3 hover:bg-blue-50/60 border-b border-slate-100 last:border-0 flex items-center justify-between gap-4 transition-colors cursor-pointer"
+        >
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">{{ item.nation.flagEmoji }}</span>
+            <div>
+              <div class="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                {{ item.nation.name }}
+                <span class="text-xs text-slate-500 font-normal">({{ item.continent.name }})</span>
+              </div>
+              <div class="text-xs text-slate-500 line-clamp-1">
+                Porti: {{ item.nation.mainPorts.slice(0, 3).join(', ') }}
+              </div>
+            </div>
+          </div>
+          <div class="text-right shrink-0">
+            <span class="text-xs font-mono font-semibold text-blue-600">
+              {{ item.nation.activeSurveyors }} Commissari
+            </span>
+            <div class="text-[11px] text-slate-500">
+              Risposta: {{ item.nation.averageResponseHours }}h
+            </div>
+          </div>
+        </button>
+      }
+    </div>
+  }
+</div>

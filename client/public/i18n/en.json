@@ -1,11 +1,26 @@
 {
+  "app": {
+    "title": "Average Adjusters",
+    "subtitle": "Global Network of Marine Cargo Surveyors & Average Adjusters"
+  },
+  "nav": {
+    "map": "Global Map",
+    "continents": "Continents",
+    "services": "Survey Services",
+    "normative": "Regulatory Framework",
+    "urgentDispatch": "24/7 Rapid Response"
+  },
   "errors": {
     "pageNotFound": {
       "title": "Oops! Page not found",
-      "description": "It looks like the page you are looking for has been moved or no longer exists."
+      "description": "It seems the page you are looking for has been moved or does not exist."
     }
   },
   "common": {
-    "backToHome": "Back to Home"
+    "backToHome": "Back to Home",
+    "explore": "Explore",
+    "surveyors": "Surveyors",
+    "ports": "Ports",
+    "nations": "Nations"
   }
 }

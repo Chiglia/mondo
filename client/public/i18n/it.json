@@ -1,4 +1,15 @@
 {
+  "app": {
+    "title": "Commissari d'Avaria",
+    "subtitle": "Rete Globale di Periti Marittimi e Regolatori d'Avaria"
+  },
+  "nav": {
+    "map": "Mappa Globale",
+    "continents": "Continenti",
+    "services": "Servizi Peritali",
+    "normative": "Quadro Normativo",
+    "urgentDispatch": "Pronto Intervento H24"
+  },
   "errors": {
     "pageNotFound": {
       "title": "Oops! Pagina non trovata",
@@ -6,6 +17,10 @@
     }
   },
   "common": {
-    "backToHome": "Torna alla Home"
+    "backToHome": "Torna alla Home",
+    "explore": "Esplora",
+    "surveyors": "Commissari",
+    "ports": "Porti",
+    "nations": "Nazioni"
   }
 }

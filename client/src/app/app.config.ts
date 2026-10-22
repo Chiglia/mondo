@@ -9,12 +9,14 @@ import { definePreset, palette } from '@primeuix/themes';
 import { provideHttpClient } from '@angular/common/http';
 import { TranslocoHttpLoader } from './transloco-loader';
 import { provideTransloco } from '@jsverse/transloco';
+import { provideDefaultClient } from './api/providers';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(),
+    provideDefaultClient({ basePath: 'http://localhost:8080' }),
     provideTransloco({
       config: {
         availableLangs: ['it', 'en'],
