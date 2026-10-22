@@ -1,11 +1,8 @@
-<div
-  class="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-800"
-  *transloco="let t"
->
+<div class="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-800" *transloco="let t">
   <app-header />
 
   <!-- HERO SECTION -->
-  <section class="relative bg-slate-900 text-white overflow-hidden border-b border-slate-800">
+  <section class="relative z-10 bg-slate-900 text-white border-b border-slate-800">
     <div class="absolute inset-0 opacity-20 pointer-events-none">
       <img
         src="/assets/images/hero_maritime_survey_1792589834189.jpg"
@@ -43,16 +40,16 @@
         <span aria-hidden="true" class="text-slate-600">·</span>
         <span
           ><strong class="text-white text-sm font-bold">{{
-            isApiDirectoryLoading() ? '…' : totalCommissioners()
+            isApiDirectoryLoading() ? '…' : totalNations()
           }}</strong>
-          {{ t('home.commissioners') }}</span
+          {{ t('common.nations') }}</span
         >
         <span aria-hidden="true" class="text-slate-600">·</span>
         <span
           ><strong class="text-white text-sm font-bold">{{
-            isApiDirectoryLoading() ? '…' : totalNations()
+            isApiDirectoryLoading() ? '…' : totalCommissioners()
           }}</strong>
-          {{ t('common.nations') }}</span
+          {{ t('home.commissioners') }}</span
         >
       </div>
       @if (apiDirectoryError()) {
