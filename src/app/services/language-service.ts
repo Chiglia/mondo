@@ -4,7 +4,6 @@ import { NavigationEnd, Router } from '@angular/router';
 import { getBrowserLang, TranslocoService } from '@jsverse/transloco';
 import { PrimeNG } from 'primeng/config';
 import { filter, take } from 'rxjs';
-import { AvariaService } from './avaria.service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +11,6 @@ import { AvariaService } from './avaria.service';
 export class LanguageService {
   private translocoService = inject(TranslocoService);
   private primeng = inject(PrimeNG);
-  private avariaService = inject(AvariaService);
   private router = inject(Router);
   private title = inject(Title);
 
@@ -58,7 +56,6 @@ export class LanguageService {
     // Aggiornamento DOM e PrimeNG
     document.documentElement.lang = lang;
     this.syncPrimeNG(lang);
-    void this.avariaService.loadApiDirectory(lang as 'it' | 'en');
   }
 
   private syncPrimeNG(lang: string) {

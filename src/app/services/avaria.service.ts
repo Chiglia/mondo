@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, Injector, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import type { CommissarioDto, ContinenteDto, NazioneDto } from '../api/models';
+import type { CommissarioDto, NazioneDto, StatisticheDto } from '../api/models';
 import { Continent, Nation } from '../models/continent.model';
 import { CONTINENTS_META } from '../data/continents-meta.data';
 import { NATIONS_EUROPE } from '../data/nations-europe.data';
@@ -23,150 +23,112 @@ export class AvariaService {
         ...NATIONS_AFRICA_OCEANIA,
     ];
 
-    readonly apiContinents = signal<ContinenteDto[]>([]);
-    readonly apiNationsByContinent = signal<Record<string, NazioneDto[]>>({});
-    readonly apiCommissionersByNation = signal<Record<string, CommissarioDto[]>>({});
-    readonly isApiDirectoryLoading = signal(true);
-    readonly apiDirectoryError = signal<string | null>(null);
-    readonly apiNationCount = computed(() =>
-        Object.values(this.apiNationsByContinent()).reduce((total, nations) => total + nations.length, 0),
-    );
-    readonly apiContinentCount = computed(() => this.apiContinents().length);
-    readonly apiCommissionerCount = computed(() =>
-        Object.values(this.apiCommissionersByNation()).reduce((total, commissioners) => total + commissioners.length, 0),
-    );
+    readonly isStatisticsLoading = signal(true);
+    readonly statisticsError = signal<string | null>(null);
+    readonly apiStatistics = signal<StatisticheDto | null>(null);
+    readonly apiNationCount = computed(() => this.apiStatistics()?.numeroNazioni ?? null);
+    readonly apiCommissionerCount = computed(() => this.apiStatistics()?.numeroCommissari ?? null);
 
-    private apiDirectoryPromise: Promise<void> | null = null;
-    private apiDirectoryPromiseLanguage: string | null = null;
-    private apiDirectoryLanguage: string | null = null;
-    private apiDirectoryRequestId = 0;
+    private statisticsPromise: Promise<void> | null = null;
+    private readonly nationRequests = new Map<string, Promise<NazioneDto[]>>();
+    private readonly commissionerRequests = new Map<string, Promise<CommissarioDto[]>>();
+    private readonly continentCodes = {
+        africa: 'AF',
+        america: 'AM',
+        asia: 'AS',
+        europa: 'EU',
+        oceania: 'OC',
+    } as const;
 
-    loadApiDirectory(language: AppLanguage = 'it'): Promise<void> {
-        if (this.apiDirectoryPromise && this.apiDirectoryPromiseLanguage === language) {
-            return this.apiDirectoryPromise;
+    loadStatistics(): Promise<void> {
+        if (this.statisticsPromise) {
+            return this.statisticsPromise;
         }
-        if (this.apiDirectoryLanguage === language && !this.apiDirectoryError()) {
+        if (this.apiStatistics() && !this.statisticsError()) {
             return Promise.resolve();
         }
 
-        const requestId = ++this.apiDirectoryRequestId;
-        this.isApiDirectoryLoading.set(true);
-        this.apiDirectoryError.set(null);
-        this.apiDirectoryPromiseLanguage = language;
-        this.apiDirectoryPromise = this.fetchApiDirectory(language)
-            .then(({ apiContinents, apiNationsByContinent, apiCommissionersByNation }) => {
-                if (requestId !== this.apiDirectoryRequestId) {
-                    return;
-                }
-                this.apiContinents.set(apiContinents);
-                this.apiNationsByContinent.set(apiNationsByContinent);
-                this.apiCommissionersByNation.set(apiCommissionersByNation);
-                this.apiDirectoryLanguage = language;
-            })
+        this.isStatisticsLoading.set(true);
+        this.statisticsError.set(null);
+        this.statisticsPromise = this.getApiClient()
+            .then(client => firstValueFrom(client.getStatistiche()))
+            .then(statistics => this.apiStatistics.set(this.validateStatistics(statistics)))
             .catch((error: unknown) => {
-                if (requestId !== this.apiDirectoryRequestId) {
-                    return;
-                }
                 const message = error instanceof Error ? error.message : 'Errore imprevisto durante il caricamento dei dati.';
-                this.apiDirectoryError.set(message);
+                this.statisticsError.set(message);
             })
             .finally(() => {
-                if (requestId === this.apiDirectoryRequestId) {
-                    this.isApiDirectoryLoading.set(false);
-                    this.apiDirectoryPromise = null;
-                    this.apiDirectoryPromiseLanguage = null;
-                }
+                this.isStatisticsLoading.set(false);
+                this.statisticsPromise = null;
             });
 
-        return this.apiDirectoryPromise;
+        return this.statisticsPromise;
     }
 
-    private async fetchApiDirectory(language: AppLanguage): Promise<{
-        apiContinents: ContinenteDto[];
-        apiNationsByContinent: Record<string, NazioneDto[]>;
-        apiCommissionersByNation: Record<string, CommissarioDto[]>;
-    }> {
+    private async getApiClient() {
         const { ConsultazioneService } = await import('../api/services/consultazione.service');
-        const consultazioneService = this.injector.get(ConsultazioneService);
-        const apiContinents = await firstValueFrom(consultazioneService.getContinenti(language));
-        if (apiContinents.length === 0) {
-            throw new Error('L’API non ha restituito continenti.');
+        return this.injector.get(ConsultazioneService);
+    }
+
+    private validateStatistics(statistics: StatisticheDto): StatisticheDto {
+        if (!statistics ||
+            typeof statistics.numeroNazioni !== 'number' ||
+            typeof statistics.numeroCommissari !== 'number' ||
+            !Number.isSafeInteger(statistics.numeroNazioni) ||
+            !Number.isSafeInteger(statistics.numeroCommissari) ||
+            statistics.numeroNazioni < 0 || statistics.numeroCommissari < 0) {
+            throw new Error('L’API ha restituito statistiche non valide.');
         }
-
-        const continentIds: Record<NonNullable<ContinenteDto['codice']>, string> = {
-            AF: 'africa',
-            AM: 'america',
-            AS: 'asia',
-            EU: 'europa',
-            OC: 'oceania',
-        };
-
-        const results = await Promise.all(
-            apiContinents.map(async continent => {
-                const code = continent.codice;
-                if (!code || !continentIds[code]) {
-                    throw new Error(`Codice continente non riconosciuto: ${code ?? 'mancante'}.`);
-                }
-
-                const nations = await firstValueFrom(consultazioneService.getNazioni(code, language));
-                return [continentIds[code], nations] as const;
-            }),
-        );
-
-        const nationEntries = results.flatMap(([continentId, nations]) =>
-            nations.map(nation => {
-                if (!nation.codice) {
-                    throw new Error(`L’API ha restituito una nazione senza codice nel continente ${continentId}.`);
-                }
-                return [nation.codice, nation] as const;
-            }),
-        );
-
-        const commissionerEntries = await Promise.all(
-            nationEntries.map(async ([nationCode]) => {
-                const commissioners = await firstValueFrom(consultazioneService.getCommissari(nationCode));
-                return [nationCode, commissioners] as const;
-            }),
-        );
-
-        return {
-            apiContinents,
-            apiNationsByContinent: Object.fromEntries(results),
-            apiCommissionersByNation: Object.fromEntries(commissionerEntries),
-        };
+        return statistics;
     }
 
-    getApiNationsByContinent(continentId: string): NazioneDto[] {
-        return this.apiNationsByContinent()[continentId] ?? [];
-    }
-
-    getApiNationCount(continentId: string): number {
-        return this.getApiNationsByContinent(continentId).length;
-    }
-
-    getApiCommissionersByNation(nationCode: string): CommissarioDto[] {
-        return this.apiCommissionersByNation()[nationCode] ?? [];
-    }
-
-    searchApiNations(term: string): { nation: NazioneDto; continent: Continent }[] {
-        const query = term.trim().toLocaleLowerCase();
-        if (!query) {
-            return [];
+    loadNations(continentId: string, language: AppLanguage): Promise<NazioneDto[]> {
+        const key = `${continentId}:${language}`;
+        const cached = this.nationRequests.get(key);
+        if (cached) {
+            return cached;
         }
-
-        return Object.entries(this.apiNationsByContinent()).flatMap(([continentId, nations]) => {
-            const continent = this.getContinentById(continentId);
-            if (!continent) {
-                return [];
+        const request = this.getApiClient().then(client => {
+            const code = Object.entries(this.continentCodes).find(([id]) => id === continentId)?.[1];
+            if (!code) {
+                throw new Error(`Continente non riconosciuto: ${continentId}.`);
             }
-
-            return nations
-                .filter(nation =>
-                    nation.descrizione?.toLocaleLowerCase().includes(query) ||
-                    nation.codice?.toLocaleLowerCase().includes(query),
-                )
-                .map(nation => ({ nation, continent }));
+            return firstValueFrom(client.getNazioni(code, language));
+        }).then(nations => {
+            if (nations.some(nation => !nation.codice)) {
+                throw new Error(`L’API ha restituito una nazione senza codice nel continente ${continentId}.`);
+            }
+            return nations;
+        }).catch((error: unknown) => {
+            this.nationRequests.delete(key);
+            throw error;
         });
+        this.nationRequests.set(key, request);
+        return request;
+    }
+
+    loadCommissioners(nationCode: string): Promise<CommissarioDto[]> {
+        const cached = this.commissionerRequests.get(nationCode);
+        if (cached) {
+            return cached;
+        }
+        const request = this.getApiClient()
+            .then(client => firstValueFrom(client.getCommissari(nationCode)))
+            .catch((error: unknown) => {
+                this.commissionerRequests.delete(nationCode);
+                throw error;
+            });
+        this.commissionerRequests.set(nationCode, request);
+        return request;
+    }
+
+    async searchApiNations(term: string, language: AppLanguage): Promise<NazioneDto> {
+        const client = await this.getApiClient();
+        const nation = await firstValueFrom(client.getNazioneByDescrizione(term.trim(), language));
+        if (!nation?.codice) {
+            throw new Error('L’API ha restituito una nazione senza codice.');
+        }
+        return nation;
     }
 
     getContinents(): Continent[] {

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslocoDirective } from '@jsverse/transloco';
 
@@ -9,5 +9,6 @@ import { TranslocoDirective } from '@jsverse/transloco';
     styles: ``,
 })
 export class FooterComponent {
+    readonly compact = input(false);
     currentYear = new Date().getFullYear();
 }

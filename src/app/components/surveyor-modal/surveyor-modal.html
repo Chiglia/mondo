@@ -15,7 +15,7 @@
         <div>
           <h2 class="text-lg font-bold">{{ nation.descrizione }}</h2>
           <p class="text-xs text-slate-300">
-            {{ commissioners.length }}
+            {{ loading ? '…' : (error ? '—' : commissioners.length) }}
             {{ commissioners.length === 1 ? t('common.commissioner') : t('common.commissioners') }}
             @if (nation.codice) {
               <span>· {{ nation.codice }}</span>
@@ -33,7 +33,14 @@
       </header>
 
       <div class="p-6 space-y-4 overflow-y-auto">
-        @if (commissioners.length > 0) {
+        @if (loading) {
+          <p class="text-sm text-slate-500" role="status">{{ t('commissioner.loading') }}</p>
+        } @else if (error) {
+          <div role="alert" class="text-sm text-red-700">
+            <p>{{ t('common.loadError') }}: {{ error }}</p>
+            <button type="button" (click)="retry.emit()" class="mt-2 underline">{{ t('common.retry') }}</button>
+          </div>
+        } @else if (commissioners.length > 0) {
           @for (commissioner of commissioners; track $index) {
             <article class="border border-slate-200 rounded-xl p-5 space-y-4">
               <div>

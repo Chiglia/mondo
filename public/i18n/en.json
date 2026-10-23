@@ -35,6 +35,8 @@
     "selectableContinent": "Selectable continent"
   },
   "quickSearch": {
+    "notFound": "No nation found.",
+    "ambiguous": "The search matches multiple nations. Enter a more specific description.",
     "placeholder": "Search for a country...",
     "resultsFound": "countries found"
   },
@@ -46,6 +48,7 @@
     "noNationsDescription": "No countries match the search criteria"
   },
   "commissioner": {
+    "loading": "Loading commissioners...",
     "title": "Commissioners in",
     "countryCode": "Country code",
     "address": "Address",

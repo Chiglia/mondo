@@ -22,6 +22,17 @@
   </div>
 
   <!-- Live Dropdown Results -->
+  @if (loading()) {
+    <p role="status" class="mt-2 text-xs text-slate-300">{{ t('continentPage.loading') }}</p>
+  } @else if (error()) {
+    <div role="alert" class="mt-2 text-xs text-red-200">
+      {{ t('common.loadError') }}: {{ error() }}
+      <button type="button" (click)="onSearchChange()" class="ml-1 underline">{{ t('common.retry') }}</button>
+    </div>
+  }
+  @if (searchMessage(); as message) {
+    <p role="status" class="mt-2 text-xs text-slate-300">{{ t(message) }}</p>
+  }
   @if (searchResults.length > 0) {
     <div
       class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl border border-slate-200 shadow-xl overflow-hidden z-40 max-h-80 overflow-y-auto"
@@ -29,26 +40,32 @@
       <div class="px-3 py-2 bg-slate-50 border-b border-slate-100 text-xs font-mono text-slate-500">
         {{ searchResults.length }} {{ t('quickSearch.resultsFound') }}
       </div>
-      @for (item of searchResults; track item.nation.codice) {
+      @for (item of searchResults; track item.codice) {
         <button
           type="button"
-          (mousedown)="selectResult(item)"
+          (click)="selectResult(item)"
           class="w-full text-left px-4 py-3 hover:bg-blue-50/60 border-b border-slate-100 last:border-0 flex items-center justify-between gap-4 transition-colors cursor-pointer"
         >
           <div class="flex items-center gap-3">
             <div>
               <div class="text-sm font-semibold text-slate-900 flex items-center gap-2">
-                {{ item.nation.descrizione }}
-                <span class="text-xs text-slate-500 font-normal"
-                  >({{ t('continents.' + item.continent.id) }})</span
-                >
+                {{ item.descrizione }}
               </div>
-              <div class="text-xs text-slate-500 line-clamp-1">{{ item.nation.codice }}</div>
+              <div class="text-xs text-slate-500 line-clamp-1">{{ item.codice }}</div>
             </div>
           </div>
           <span class="text-xs font-mono font-semibold text-blue-600">{{ t('common.open') }}</span>
         </button>
       }
     </div>
+
   }
+  <app-surveyor-modal
+    [nation]="selectedNation"
+    [commissioners]="commissioners"
+    [loading]="commissionersLoading()"
+    [error]="commissionersError()"
+    (close)="closeNationDetails()"
+    (retry)="retryCommissionersLoad()"
+  />
 </div>

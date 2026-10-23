@@ -21,10 +21,6 @@ export class WorldMapComponent {
 
     readonly continents = this.avariaService.getContinents();
 
-    getApiNationCount(continentId: string): number {
-        return this.avariaService.getApiNationCount(continentId);
-    }
-
     onContinentHover(id: string | null): void {
         if (!id) {
             this.hoveredContinent = null;

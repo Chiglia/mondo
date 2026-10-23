@@ -17,6 +17,11 @@ export interface ProblemDetail {
     properties?: Record<string, any>;
 }
 
+export interface StatisticheDto {
+    numeroCommissari?: number;
+    numeroNazioni?: number;
+}
+
 export interface NazioneDto {
     codice?: string;
     descrizione?: string;

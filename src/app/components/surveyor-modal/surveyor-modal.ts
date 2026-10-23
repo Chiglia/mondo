@@ -12,7 +12,10 @@ import { TranslocoDirective } from '@jsverse/transloco';
 export class SurveyorModalComponent {
     @Input() nation: NazioneDto | null = null;
     @Input() commissioners: CommissarioDto[] = [];
+    @Input() loading = false;
+    @Input() error: string | null = null;
     @Output() close = new EventEmitter<void>();
+    @Output() retry = new EventEmitter<void>();
 
     onClose(): void {
         this.close.emit();

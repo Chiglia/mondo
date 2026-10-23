@@ -7,7 +7,6 @@ import { QuickSearchComponent } from '../../components/quick-search/quick-search
 import { FooterComponent } from '../../components/footer/footer';
 import { AvariaService } from '../../services/avaria.service';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { LanguageService } from '../../services/language-service';
 
 @Component({
   selector: 'app-home',
@@ -25,16 +24,19 @@ import { LanguageService } from '../../services/language-service';
 export class Home {
   private router = inject(Router);
   private avariaService = inject(AvariaService);
-  private languageService = inject(LanguageService);
 
   readonly totalCommissioners = this.avariaService.apiCommissionerCount;
   readonly totalNations = this.avariaService.apiNationCount;
-  readonly totalContinents = this.avariaService.apiContinentCount;
-  readonly isApiDirectoryLoading = this.avariaService.isApiDirectoryLoading;
-  readonly apiDirectoryError = this.avariaService.apiDirectoryError;
+  readonly totalContinents = this.avariaService.getContinents().length;
+  readonly isStatisticsLoading = this.avariaService.isStatisticsLoading;
+  readonly statisticsError = this.avariaService.statisticsError;
 
-  retryApiDirectoryLoad(): void {
-    void this.avariaService.loadApiDirectory(this.languageService.currentLang);
+  constructor() {
+    void this.avariaService.loadStatistics();
+  }
+
+  retryStatisticsLoad(): void {
+    void this.avariaService.loadStatistics();
   }
 
   onContinentSelected(continentId: string): void {

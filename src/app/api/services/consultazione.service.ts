@@ -12,7 +12,7 @@ import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { BASE_PATH_DEFAULT, CLIENT_CONTEXT_TOKEN_DEFAULT } from "../tokens";
 import { HttpParamsBuilder } from "../utils/http-params-builder";
-import { RequestOptions, NazioneDto, ContinenteDto, CommissarioDto } from "../models";
+import { RequestOptions, StatisticheDto, NazioneDto, ContinenteDto, CommissarioDto } from "../models";
 
 @Injectable({ providedIn: "root" })
 export class ConsultazioneService {
@@ -25,6 +25,39 @@ export class ConsultazioneService {
         return context.set(this.clientContextToken, 'default');
     }
 
+    getStatistiche(continente?: 'AF' | 'AM' | 'AS' | 'EU' | 'OC', observe?: 'body', options?: RequestOptions<'json'>): Observable<StatisticheDto>;
+    getStatistiche(continente?: 'AF' | 'AM' | 'AS' | 'EU' | 'OC', observe?: 'response', options?: RequestOptions<'json'>): Observable<HttpResponse<StatisticheDto>>;
+    getStatistiche(continente?: 'AF' | 'AM' | 'AS' | 'EU' | 'OC', observe?: 'events', options?: RequestOptions<'json'>): Observable<HttpEvent<StatisticheDto>>;
+    /** Un continente senza commissari restituisce entrambi i conteggi a zero. Se continente è omesso o vuoto, restituisce le statistiche globali. */
+    getStatistiche(continente?: 'AF' | 'AM' | 'AS' | 'EU' | 'OC', observe?: 'body' | 'events' | 'response', options?: RequestOptions<'arraybuffer' | 'blob' | 'json' | 'text'>): Observable<any> {
+        const url = `${this.basePath}/api/v1/statistiche`;
+
+        let params = new HttpParams();
+        if (continente != null) {
+            params = HttpParamsBuilder.addToHttpParams(params, continente, 'continente');
+        }
+
+        let headers: HttpHeaders;
+        if (options?.headers instanceof HttpHeaders) {
+            headers = options.headers;
+        } else {
+            headers = new HttpHeaders(options?.headers);
+        }
+        // Advertise the response content type declared in the spec
+        if (!headers.has('Accept')) {
+            headers = headers.set('Accept', 'application/json');
+        }
+
+        return this.httpClient.request('get', url, {
+            observe,
+            headers,
+            params,
+            reportProgress: options?.reportProgress,
+            withCredentials: options?.withCredentials,
+            context: this.createContextWithClientId(options?.context)
+        });
+    }
+
     getNazioni(continente: 'AF' | 'AM' | 'AS' | 'EU' | 'OC', lang?: 'it' | 'en', observe?: 'body', options?: RequestOptions<'json'>): Observable<Array<NazioneDto>>;
     getNazioni(continente: 'AF' | 'AM' | 'AS' | 'EU' | 'OC', lang?: 'it' | 'en', observe?: 'response', options?: RequestOptions<'json'>): Observable<HttpResponse<Array<NazioneDto>>>;
     getNazioni(continente: 'AF' | 'AM' | 'AS' | 'EU' | 'OC', lang?: 'it' | 'en', observe?: 'events', options?: RequestOptions<'json'>): Observable<HttpEvent<Array<NazioneDto>>>;
@@ -34,6 +67,42 @@ export class ConsultazioneService {
         let params = new HttpParams();
         if (continente != null) {
             params = HttpParamsBuilder.addToHttpParams(params, continente, 'continente');
+        }
+        if (lang != null) {
+            params = HttpParamsBuilder.addToHttpParams(params, lang, 'lang');
+        }
+
+        let headers: HttpHeaders;
+        if (options?.headers instanceof HttpHeaders) {
+            headers = options.headers;
+        } else {
+            headers = new HttpHeaders(options?.headers);
+        }
+        // Advertise the response content type declared in the spec
+        if (!headers.has('Accept')) {
+            headers = headers.set('Accept', 'application/json');
+        }
+
+        return this.httpClient.request('get', url, {
+            observe,
+            headers,
+            params,
+            reportProgress: options?.reportProgress,
+            withCredentials: options?.withCredentials,
+            context: this.createContextWithClientId(options?.context)
+        });
+    }
+
+    getNazioneByDescrizione(descrizione: string, lang?: 'it' | 'en', observe?: 'body', options?: RequestOptions<'json'>): Observable<NazioneDto>;
+    getNazioneByDescrizione(descrizione: string, lang?: 'it' | 'en', observe?: 'response', options?: RequestOptions<'json'>): Observable<HttpResponse<NazioneDto>>;
+    getNazioneByDescrizione(descrizione: string, lang?: 'it' | 'en', observe?: 'events', options?: RequestOptions<'json'>): Observable<HttpEvent<NazioneDto>>;
+    /** Ricerca LIKE senza distinzione tra maiuscole e minuscole nella lingua richiesta. Restituisce un singolo oggetto, 404 se assente, 409 se la ricerca e ambigua. */
+    getNazioneByDescrizione(descrizione: string, lang?: 'it' | 'en', observe?: 'body' | 'events' | 'response', options?: RequestOptions<'arraybuffer' | 'blob' | 'json' | 'text'>): Observable<any> {
+        const url = `${this.basePath}/api/v1/nazioni/ricerca`;
+
+        let params = new HttpParams();
+        if (descrizione != null) {
+            params = HttpParamsBuilder.addToHttpParams(params, descrizione, 'descrizione');
         }
         if (lang != null) {
             params = HttpParamsBuilder.addToHttpParams(params, lang, 'lang');
