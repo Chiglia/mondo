@@ -101,7 +101,7 @@
         }
       </section>
 
-      <div class="flex min-h-0 min-w-0 flex-col">
+      <div class="flex min-h-0 min-w-0 flex-col justify-center">
         <div class="relative mb-2 shrink-0">
           <i
             class="pi pi-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"
@@ -147,7 +147,7 @@
           </div>
         } @else if (filteredNations.length > 0) {
           <div
-            class="grid min-h-0 flex-1 content-start grid-cols-1 gap-1 overflow-y-auto overscroll-contain pr-1 min-[640px]:grid-cols-[repeat(auto-fit,minmax(13rem,1fr))]"
+            class="grid min-h-0 max-h-[calc(100%-3rem)] flex-none content-center grid-cols-1 gap-1 overflow-y-auto overscroll-contain pr-1 min-[640px]:grid-cols-[repeat(auto-fit,minmax(13rem,1fr))]"
           >
             @for (n of filteredNations; track n.codice) {
               <button
