@@ -21,9 +21,6 @@
               {{
                 commissioners.length === 1 ? t('common.commissioner') : t('common.commissioners')
               }}
-              @if (nation.codice) {
-                <span>· {{ nation.codice }}</span>
-              }
             </p>
           </div>
           <button
@@ -87,13 +84,26 @@
                           {{ commissioner.indirizzo }}
                         }
                         @if (commissioner.dettaglioIndirizzo) {
-                          · {{ commissioner.dettaglioIndirizzo }}
+                          @if (commissioner.indirizzo) {
+                            ·
+                          }
+                          {{ commissioner.dettaglioIndirizzo }}
                         }
                         @if (commissioner.citta) {
-                          · {{ commissioner.citta }}
+                          @if (commissioner.indirizzo || commissioner.dettaglioIndirizzo) {
+                            ·
+                          }
+                          {{ commissioner.citta }}
                         }
                         @if (commissioner.cap) {
-                          · {{ commissioner.cap }}
+                          @if (
+                            commissioner.indirizzo ||
+                            commissioner.dettaglioIndirizzo ||
+                            commissioner.citta
+                          ) {
+                            ·
+                          }
+                          {{ commissioner.cap }}
                         }
                       </dd>
                     </div>
