@@ -30,15 +30,35 @@ ng generate --help
 
 Continent pages display a regional crop of the local world map and a compact,
 alphabetically sorted nation grid. The desktop layout is designed to show around
-40 nations at once (five columns from 1024px, six from 1280px), with a compact
-footer on these pages only. Search and the nation details dialog remain available.
+40 nations at once (five columns from 1024px, six from 1280px).
+Search and the nation details dialog remain available.
 Smaller screens, increased text size, or longer lists can scroll normally so no
 content is hidden.
 
-The home page makes just one data API request: `ConsultazioneService.getStatistiche()`
-without a continent for global nation and commissioner totals. The continent count
-comes from the five configured map regions. No directory or per-continent
-statistics requests are made at startup or on map hover.
+The home page uses a viewport-height layout with a compact heading,
+search and an automatically sized world map, without a footer or global counters.
+On desktop, the heading sits alongside a smaller search input,
+leaving most of the available height to the proportionally scaled, centered map.
+These elements fit together without page scrolling on standard desktop and
+portrait mobile screens. Viewports shorter than 620px retain scrolling rather
+than clipping content; search results and nation details can scroll independently.
+
+The map uses public-domain Natural Earth country boundaries grouped into five
+interactive continents in `src/app/data/world-map-regions.data.ts`. Antarctica is
+excluded and Russia's date-line polygons are joined on the right. All regions use
+the same base color; hovering or keyboard focus highlights the entire continent
+and shows its translated name in the information panel. Click or Enter opens that
+continent. Interactive boundaries follow the visible country outlines, not
+approximate hit boxes.
+
+The home page makes five statistics API requests in parallel at startup:
+`ConsultazioneService.getStatistiche()` for each continent (`AF`, `AM`, `AS`, `EU`,
+`OC`). The map hover panel shows each continent's nation and commissioner totals.
+Successful
+statistics and in-flight requests are reused across home-page visits; hovering
+does not trigger API calls. Each continent loads independently, with loading and
+error feedback and a retry action that requests only failed statistics. No
+directory requests are made at startup or on map hover.
 
 Entering a continent calls `getNazioni` for that region and the active language;
 the page count reflects that returned list. Opening a nation calls `getCommissari`

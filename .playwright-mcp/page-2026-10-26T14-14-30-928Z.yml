@@ -1,0 +1,4 @@
+- banner [ref=e3]:
+  - button "Switch language to Italian" [ref=e4]: IT
+  - button "Switch to light theme" [ref=e5]:
+    - generic [aria-hidden] [ref=e6]: 

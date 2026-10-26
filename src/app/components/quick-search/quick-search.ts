@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -16,6 +16,7 @@ import { SurveyorModalComponent } from '../surveyor-modal/surveyor-modal';
     styles: ``,
 })
 export class QuickSearchComponent {
+    readonly compact = input(false);
     private avariaService = inject(AvariaService);
     private languageService = inject(LanguageService);
     private translocoService = inject(TranslocoService);

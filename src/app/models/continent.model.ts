@@ -39,5 +39,4 @@ export interface Continent {
     totalPorts: number;
     nationsCount: number;
     svgColor: string;
-    mapViewBox: string;
 }

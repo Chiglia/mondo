@@ -1,41 +1,20 @@
 <div
-  class="relative w-full rounded-2xl bg-slate-950 border border-slate-800/80 p-4 sm:p-6 shadow-2xl overflow-hidden"
+  class="relative flex flex-col h-full min-h-0 w-full rounded-2xl bg-slate-950 border border-slate-800 dark:border-slate-700 p-3 sm:p-4 shadow-2xl"
   *transloco="let t"
 >
   <!-- Map Header Bar -->
   <div
-    class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pb-4 border-b border-slate-800"
+    class="flex shrink-0 flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2 pb-2 border-b border-slate-800"
   >
-    <div>
-      <span class="text-xs font-mono uppercase tracking-wider text-blue-400"
-        >{{ t('map.title') }}</span
-      >
-      <h3 class="text-lg font-bold text-white">
-        {{ t('map.subtitle') }}
-      </h3>
-    </div>
-
-    <!-- Quick continent pills for direct accessibility -->
-    <div class="flex flex-wrap gap-1.5">
-      @for (c of continents; track c.id) {
-        <button
-          type="button"
-          (mouseenter)="onContinentHover(c.id)"
-          (mouseleave)="onContinentHover(null)"
-          (click)="selectContinent(c.id)"
-          [class.ring-2]="hoveredContinent?.id === c.id"
-          class="px-2.5 py-1 text-xs font-medium rounded-md bg-slate-800/80 hover:bg-blue-600/80 text-slate-200 hover:text-white transition-all cursor-pointer border border-slate-700/60"
-        >
-          {{ t('continents.' + c.id) }}
-        </button>
-      }
-    </div>
+    <h3 class="text-xs sm:text-base font-bold text-white">
+      {{ t('map.title') }}
+    </h3>
   </div>
 
   <!-- Interactive SVG Map Canvas -->
-  <div class="relative w-full aspect-[2/1] min-h-[340px] max-h-[560px]">
+  <div class="relative w-full flex-1 min-h-0">
     <svg
-      viewBox="0 0 1000 500"
+      viewBox="0 0 1040 420"
       class="w-full h-full select-none"
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -57,16 +36,8 @@
       </defs>
 
       <!-- Background Ocean -->
-      <rect width="1000" height="500" fill="url(#oceanGlow)" rx="12" />
-      <rect width="1000" height="500" fill="url(#marineGrid)" rx="12" opacity="0.6" />
-      <image
-        href="/assets/images/world-map.svg"
-        x="0"
-        y="0"
-        width="1000"
-        height="500"
-        aria-hidden="true"
-      />
+      <rect width="1040" height="500" fill="url(#oceanGlow)" rx="12" />
+      <rect width="1040" height="500" fill="url(#marineGrid)" rx="12" opacity="0.6" />
 
       <!-- Major Shipping Lanes (aesthetic dashed lines) -->
       <g stroke="#334155" stroke-width="1" stroke-dasharray="3 4" fill="none" opacity="0.5">
@@ -81,163 +52,45 @@
         <path d="M 180 190 Q 235 245 320 320" />
       </g>
 
-      <!-- CONTINENT: North America -->
-      <g
-        (mouseenter)="onContinentHover('america')"
-        (mouseleave)="onContinentHover(null)"
-        (click)="selectContinent('america')"
-        class="cursor-pointer transition-all duration-300 group"
-      >
-        <path
-          d="M 110 70 L 170 50 L 250 55 L 290 85 L 250 115 L 210 125 L 245 165 L 260 190 L 235 245 L 215 220 L 175 200 L 140 160 L 115 130 Z
-                 M 270 30 L 330 35 L 340 70 L 290 60 Z"
-          fill="transparent"
-          stroke="transparent"
-        />
-        <text
-          x="180"
-          y="130"
-          fill="#94a3b8"
-          font-size="13"
-          font-weight="600"
-          text-anchor="middle"
-          class="pointer-events-none select-none"
+      @for (region of regions; track region.id) {
+        <g
+          class="continent"
+          [class.active]="hoveredContinent?.id === region.id"
+          [attr.data-continent]="region.id"
+          role="link"
+          tabindex="0"
+          [attr.aria-label]="t('continents.' + region.id)"
+          (mouseenter)="onContinentHover(region.id)"
+          (mouseleave)="onContinentHover(null)"
+          (focus)="onContinentHover(region.id)"
+          (blur)="onContinentHover(null)"
+          (click)="selectContinent(region.id)"
+          (keydown.enter)="selectContinent(region.id)"
         >
-          {{ t('map.northAmerica') | uppercase }}
-        </text>
-      </g>
-
-      <!-- CONTINENT: South America -->
-      <g
-        (mouseenter)="onContinentHover('america')"
-        (mouseleave)="onContinentHover(null)"
-        (click)="selectContinent('america')"
-        class="cursor-pointer transition-all duration-300 group"
-      >
-        <path
-          d="M 235 245 L 285 240 L 340 280 L 360 320 L 320 380 L 290 450 L 260 460 L 255 410 L 240 330 L 220 280 Z"
-          fill="transparent"
-          stroke="transparent"
-        />
-        <text
-          x="290"
-          y="340"
-          fill="#94a3b8"
-          font-size="13"
-          font-weight="600"
-          text-anchor="middle"
-          class="pointer-events-none select-none"
-        >
-          {{ t('map.southAmerica') | uppercase }}
-        </text>
-      </g>
-
-      <!-- CONTINENT: Europe -->
-      <g
-        (mouseenter)="onContinentHover('europa')"
-        (mouseleave)="onContinentHover(null)"
-        (click)="selectContinent('europa')"
-        class="cursor-pointer transition-all duration-300 group"
-      >
-        <path
-          d="M 450 90 L 510 70 L 550 85 L 565 140 L 520 170 L 470 175 L 450 140 L 430 115 Z
-                 M 455 60 L 485 50 L 500 75 L 470 80 Z
-                 M 430 85 L 450 80 L 445 105 L 425 100 Z"
-          fill="transparent"
-          stroke="transparent"
-        />
-        <text
-          x="495"
-          y="125"
-          fill="#94a3b8"
-          font-size="13"
-          font-weight="600"
-          text-anchor="middle"
-          class="pointer-events-none select-none"
-        >
-          {{ t('continents.europa') | uppercase }}
-        </text>
-      </g>
-
-      <!-- CONTINENT: Africa -->
-      <g
-        (mouseenter)="onContinentHover('africa')"
-        (mouseleave)="onContinentHover(null)"
-        (click)="selectContinent('africa')"
-        class="cursor-pointer transition-all duration-300 group"
-      >
-        <path
-          d="M 465 180 L 565 175 L 610 240 L 595 285 L 560 380 L 520 395 L 475 320 L 445 250 L 455 210 Z
-                 M 610 330 L 630 340 L 620 380 L 605 370 Z"
-          fill="transparent"
-          stroke="transparent"
-        />
-        <text
-          x="525"
-          y="275"
-          fill="#94a3b8"
-          font-size="13"
-          font-weight="600"
-          text-anchor="middle"
-          class="pointer-events-none select-none"
-        >
-          {{ t('continents.africa') | uppercase }}
-        </text>
-      </g>
-
-      <!-- CONTINENT: Asia -->
-      <g
-        (mouseenter)="onContinentHover('asia')"
-        (mouseleave)="onContinentHover(null)"
-        (click)="selectContinent('asia')"
-        class="cursor-pointer transition-all duration-300 group"
-      >
-        <path
-          d="M 570 85 L 750 65 L 870 90 L 890 140 L 820 180 L 840 230 L 785 270 L 730 250 L 670 260 L 625 215 L 575 145 Z
-                 M 855 130 L 885 140 L 870 185 L 845 170 Z"
-          fill="transparent"
-          stroke="transparent"
-        />
-        <text
-          x="720"
-          y="150"
-          fill="#94a3b8"
-          font-size="13"
-          font-weight="600"
-          text-anchor="middle"
-          class="pointer-events-none select-none"
-        >
-          {{ t('continents.asia') | uppercase }}
-        </text>
-      </g>
-
-      <!-- CONTINENT: Oceania -->
-      <g
-        (mouseenter)="onContinentHover('oceania')"
-        (mouseleave)="onContinentHover(null)"
-        (click)="selectContinent('oceania')"
-        class="cursor-pointer transition-all duration-300 group"
-      >
-        <path
-          d="M 760 300 L 830 290 L 850 330 L 870 380 L 840 420 L 770 415 L 745 365 Z
-                 M 885 410 L 910 415 L 895 450 L 875 440 Z"
-          fill="transparent"
-          stroke="transparent"
-        />
-        <text
-          x="810"
-          y="360"
-          fill="#94a3b8"
-          font-size="13"
-          font-weight="600"
-          text-anchor="middle"
-          class="pointer-events-none select-none"
-        >
-          {{ t('continents.oceania') | uppercase }}
-        </text>
-      </g>
-
+          <path [attr.d]="region.path" />
+        </g>
+      }
     </svg>
+
+    @if (statisticsErrors().length > 0) {
+      <div class="absolute top-2 left-2 right-2 z-10 space-y-1">
+        @for (error of statisticsErrors(); track error.id) {
+          <div
+            role="alert"
+            class="rounded-lg border border-red-900/80 bg-slate-950/95 px-3 py-2 text-xs text-red-200"
+          >
+            {{ t('common.loadError') }}: {{ error.message }}
+            <button
+              type="button"
+              class="ml-1 underline cursor-pointer"
+              (click)="retryStatisticsLoad()"
+            >
+              {{ t('common.retry') }}
+            </button>
+          </div>
+        }
+      </div>
+    }
 
     <!-- Floating HUD Info Overlay when Hovering -->
     @if (hoveredContinent) {
@@ -245,32 +98,31 @@
         class="absolute bottom-4 left-4 right-4 sm:right-auto sm:max-w-md bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-xl p-4 shadow-xl pointer-events-none animate-in fade-in duration-150"
       >
         <div class="flex items-center justify-between gap-4 mb-2">
-          <div class="flex items-center gap-2">
-            <span
-              class="w-3 h-3 rounded-full"
-              [style.backgroundColor]="hoveredContinent.svgColor"
-            ></span>
-            <h4 class="font-bold text-white text-base">
-              {{ t('continents.' + hoveredContinent.id) }}
-            </h4>
-          </div>
-          <span class="text-xs font-mono text-blue-400 font-semibold uppercase"
-            >{{ t('map.clickToOpen') }}</span
-          >
+          <span class="text-xs font-mono text-blue-400 font-semibold uppercase">{{
+            t('continents.' + hoveredContinent.id)
+          }}</span>
         </div>
+        @if (continentStatistics()[hoveredContinent.id]; as state) {
+          @if (state.loading) {
+            <p role="status" class="text-xs text-slate-300">{{ t('continentPage.loading') }}</p>
+          } @else if (state.error) {
+            <p role="alert" class="text-xs text-red-200">
+              {{ t('common.loadError') }}: {{ state.error }}
+            </p>
+          } @else if (state.statistics; as statistics) {
+            <div class="flex items-center gap-4 text-xs text-slate-300 tabular-nums">
+              <span
+                ><strong class="text-white">{{ statistics.numeroNazioni }}</strong>
+                {{ t('common.nations') }}</span
+              >
+              <span
+                ><strong class="text-white">{{ statistics.numeroCommissari }}</strong>
+                {{ t('home.commissioners') }}</span
+              >
+            </div>
+          }
+        }
       </div>
     }
-
-  </div>
-
-  <!-- Legend & Instructions Footer -->
-  <div
-    class="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400 border-t border-slate-800/80 pt-3"
-  >
-    <div class="flex items-center gap-4">
-      <span class="flex items-center gap-1.5"
-        ><span class="w-2.5 h-2.5 rounded-sm bg-blue-600"></span> {{ t('map.selectableContinent') }}</span
-      >
-    </div>
   </div>
 </div>

@@ -10,6 +10,12 @@ import { NATIONS_AFRICA_OCEANIA } from '../data/nations-africa-oceania.data';
 
 type AppLanguage = 'it' | 'en';
 
+interface ContinentStatisticsState {
+    statistics: StatisticheDto | null;
+    loading: boolean;
+    error: string | null;
+}
+
 @Injectable({
     providedIn: 'root',
 })
@@ -28,8 +34,15 @@ export class AvariaService {
     readonly apiStatistics = signal<StatisticheDto | null>(null);
     readonly apiNationCount = computed(() => this.apiStatistics()?.numeroNazioni ?? null);
     readonly apiCommissionerCount = computed(() => this.apiStatistics()?.numeroCommissari ?? null);
+    readonly continentStatistics = signal<Partial<Record<string, ContinentStatisticsState>>>({});
+    readonly continentStatisticsErrors = computed(() =>
+        Object.entries(this.continentStatistics())
+            .filter((entry): entry is [string, ContinentStatisticsState] => !!entry[1]?.error)
+            .map(([id, state]) => ({ id, message: state.error })),
+    );
 
     private statisticsPromise: Promise<void> | null = null;
+    private readonly continentStatisticsRequests = new Map<string, Promise<void>>();
     private readonly nationRequests = new Map<string, Promise<NazioneDto[]>>();
     private readonly commissionerRequests = new Map<string, Promise<CommissarioDto[]>>();
     private readonly continentCodes = {
@@ -63,6 +76,38 @@ export class AvariaService {
             });
 
         return this.statisticsPromise;
+    }
+
+    async loadContinentStatistics(): Promise<void> {
+        await Promise.all(Object.entries(this.continentCodes).map(([id, code]) => {
+            const pending = this.continentStatisticsRequests.get(id);
+            if (pending) return pending;
+            if (this.continentStatistics()[id]?.statistics) return Promise.resolve();
+
+            this.continentStatistics.update(states => ({
+                ...states,
+                [id]: { statistics: null, loading: true, error: null },
+            }));
+            const request = this.getApiClient()
+                .then(client => firstValueFrom(client.getStatistiche(code)))
+                .then(statistics => {
+                    const validated = this.validateStatistics(statistics);
+                    this.continentStatistics.update(states => ({
+                        ...states,
+                        [id]: { statistics: validated, loading: false, error: null },
+                    }));
+                })
+                .catch((error: unknown) => {
+                    const message = error instanceof Error ? error.message : 'Errore imprevisto durante il caricamento dei dati.';
+                    this.continentStatistics.update(states => ({
+                        ...states,
+                        [id]: { statistics: null, loading: false, error: message },
+                    }));
+                })
+                .finally(() => this.continentStatisticsRequests.delete(id));
+            this.continentStatisticsRequests.set(id, request);
+            return request;
+        }));
     }
 
     private async getApiClient() {

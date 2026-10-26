@@ -1,0 +1,25 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - button "Switch language to Italian" [ref=e4]: IT
+    - button "Switch to light theme" [active] [ref=e47]:
+      - generic [aria-hidden] [ref=e6]: 
+  - generic [ref=e8]:
+    - generic [ref=e9]:
+      - generic:
+        - img "Commercial maritime port and survey fleet"
+      - generic [ref=e10]:
+        - generic [ref=e11]:
+          - generic [ref=e12]: What to do in the event of a claim
+          - heading "Average Adjusters" [level=1] [ref=e13]
+        - generic [ref=e17]:
+          - generic: 
+          - textbox "Search for a country..." [ref=e18]
+    - main [ref=e19]:
+      - generic [ref=e22]:
+        - heading "Choose your area of interest" [level=3] [ref=e24]
+        - img [ref=e26]:
+          - link "America" [ref=e35] [cursor=pointer]
+          - link "Europe" [ref=e37] [cursor=pointer]
+          - link "Africa" [ref=e39] [cursor=pointer]
+          - link "Asia" [ref=e41] [cursor=pointer]
+          - link "Oceania" [ref=e43] [cursor=pointer]

@@ -10,7 +10,6 @@ export const CONTINENTS_META: Continent[] = [
     totalPorts: 48,
     nationsCount: 12,
     svgColor: '#2563eb',
-    mapViewBox: '465 20 195 155',
   },
   {
     id: 'asia',
@@ -21,7 +20,6 @@ export const CONTINENTS_META: Continent[] = [
     totalPorts: 65,
     nationsCount: 10,
     svgColor: '#0284c7',
-    mapViewBox: '625 15 375 295',
   },
   {
     id: 'america',
@@ -32,7 +30,6 @@ export const CONTINENTS_META: Continent[] = [
     totalPorts: 60,
     nationsCount: 0,
     svgColor: '#0d9488',
-    mapViewBox: '20 15 405 410',
   },
   {
     id: 'africa',
@@ -43,7 +40,6 @@ export const CONTINENTS_META: Continent[] = [
     totalPorts: 22,
     nationsCount: 6,
     svgColor: '#d97706',
-    mapViewBox: '440 165 220 205',
   },
   {
     id: 'oceania',
@@ -54,6 +50,5 @@ export const CONTINENTS_META: Continent[] = [
     totalPorts: 18,
     nationsCount: 3,
     svgColor: '#7c3aed',
-    mapViewBox: '790 245 210 175',
   },
 ];

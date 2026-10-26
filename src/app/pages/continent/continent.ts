@@ -1,17 +1,16 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { combineLatest, distinctUntilChanged, map, startWith } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { HeaderComponent } from '../../components/header/header';
-import { FooterComponent } from '../../components/footer/footer';
 import { SurveyorModalComponent } from '../../components/surveyor-modal/surveyor-modal';
 import { AvariaService } from '../../services/avaria.service';
 import { Continent } from '../../models/continent.model';
 import { CommissarioDto, NazioneDto } from '../../api/models';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from '../../services/language-service';
+import { WORLD_MAP_REGIONS } from '../../data/world-map-regions.data';
 
 @Component({
     selector: 'app-continent',
@@ -19,8 +18,6 @@ import { LanguageService } from '../../services/language-service';
         CommonModule,
         FormsModule,
         RouterLink,
-        HeaderComponent,
-        FooterComponent,
         SurveyorModalComponent,
         TranslocoDirective,
     ],
@@ -47,6 +44,34 @@ export class ContinentPage {
     readonly isCommissionersLoading = signal(false);
     readonly commissionersError = signal<string | null>(null);
     commissioners: CommissarioDto[] = [];
+
+    readonly mapRegions = WORLD_MAP_REGIONS;
+    readonly continentMapViewBox = signal('0 0 1040 500');
+
+    get continentMapPath(): string {
+        const path = this.mapRegions.find(region => region.id === this.continent?.id)?.path ?? '';
+        if (this.continent?.id !== 'oceania') return path;
+
+        return path
+            .split(/(?=M)/)
+            .filter(component => {
+                const coordinates = (component.match(/-?\d+(?:\.\d+)?/g) ?? []).map(Number);
+                const xCoordinates = coordinates.filter((_, index) => index % 2 === 0);
+                return xCoordinates.length > 0 && Math.max(...xCoordinates) >= 500;
+            })
+            .join('');
+    }
+
+    @ViewChild('continentShape')
+    set continentShape(shape: ElementRef<SVGPathElement> | undefined) {
+        if (!shape) return;
+
+        const { x, y, width, height } = shape.nativeElement.getBBox();
+        const padding = Math.max(width, height) * 0.04;
+        this.continentMapViewBox.set(
+            `${x - padding} ${y - padding} ${width + padding * 2} ${height + padding * 2}`,
+        );
+    }
 
     constructor() {
         combineLatest([
@@ -110,10 +135,6 @@ export class ContinentPage {
 
     retryApiDirectoryLoad(): void {
         if (this.continent) void this.loadContinent(this.continent.id);
-    }
-
-    getNationCount(): number | null {
-        return this.apiDirectoryError() ? null : this.allNationsInContinent.length;
     }
 
     async selectNation(nation: NazioneDto): Promise<void> {

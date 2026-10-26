@@ -8,7 +8,9 @@
       (focus)="isFocused = true"
       (blur)="isFocused = false"
       [placeholder]="t('quickSearch.placeholder')"
-      class="w-full pl-11 pr-10 py-3.5 bg-white border border-slate-300 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm transition-all"
+      [class.py-2]="compact()"
+      [class.py-3.5]="!compact()"
+      class="w-full pl-11 pr-10 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm transition-all"
     />
     @if (searchTerm) {
       <button
@@ -27,7 +29,9 @@
   } @else if (error()) {
     <div role="alert" class="mt-2 text-xs text-red-200">
       {{ t('common.loadError') }}: {{ error() }}
-      <button type="button" (click)="onSearchChange()" class="ml-1 underline">{{ t('common.retry') }}</button>
+      <button type="button" (click)="onSearchChange()" class="ml-1 underline">
+        {{ t('common.retry') }}
+      </button>
     </div>
   }
   @if (searchMessage(); as message) {
@@ -35,30 +39,35 @@
   }
   @if (searchResults.length > 0) {
     <div
-      class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl border border-slate-200 shadow-xl overflow-hidden z-40 max-h-80 overflow-y-auto"
+      class="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xl overflow-hidden z-40 max-h-80 overflow-y-auto"
     >
-      <div class="px-3 py-2 bg-slate-50 border-b border-slate-100 text-xs font-mono text-slate-500">
+      <div
+        class="px-3 py-2 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700 text-xs font-mono text-slate-500 dark:text-slate-300"
+      >
         {{ searchResults.length }} {{ t('quickSearch.resultsFound') }}
       </div>
       @for (item of searchResults; track item.codice) {
         <button
           type="button"
           (click)="selectResult(item)"
-          class="w-full text-left px-4 py-3 hover:bg-blue-50/60 border-b border-slate-100 last:border-0 flex items-center justify-between gap-4 transition-colors cursor-pointer"
+          class="w-full text-left px-4 py-3 hover:bg-blue-50/60 dark:hover:bg-slate-800 border-b border-slate-100 dark:border-slate-700 last:border-0 flex items-center justify-between gap-4 transition-colors cursor-pointer"
         >
           <div class="flex items-center gap-3">
             <div>
-              <div class="text-sm font-semibold text-slate-900 flex items-center gap-2">
+              <div
+                class="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2"
+              >
                 {{ item.descrizione }}
               </div>
-              <div class="text-xs text-slate-500 line-clamp-1">{{ item.codice }}</div>
+              <div class="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">
+                {{ item.codice }}
+              </div>
             </div>
           </div>
           <span class="text-xs font-mono font-semibold text-blue-600">{{ t('common.open') }}</span>
         </button>
       }
     </div>
-
   }
   <app-surveyor-modal
     [nation]="selectedNation"

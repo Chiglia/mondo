@@ -10,6 +10,10 @@
     "switchToEnglish": "Switch language to English",
     "switchToItalian": "Switch language to Italian"
   },
+  "theme": {
+    "switchToDark": "Switch to dark theme",
+    "switchToLight": "Switch to light theme"
+  },
   "nav": {
     "map": "Global map"
   },
@@ -21,13 +25,13 @@
     "oceania": "Oceania"
   },
   "home": {
-    "eyebrow": "Marine surveys around the world",
-    "title": "Global Average Adjusters Network",
+    "eyebrow": "What to do in the event of a claim",
+    "title": "Average Adjusters",
     "commissioners": "Commissioners",
     "heroImageAlt": "Commercial maritime port and survey fleet"
   },
   "map": {
-    "title": "Global geographic network",
+    "title": "Choose your area of interest",
     "subtitle": "Select a continent to browse its countries",
     "northAmerica": "North America",
     "southAmerica": "South America",
@@ -50,7 +54,8 @@
   "commissioner": {
     "loading": "Loading commissioners...",
     "title": "Commissioners in",
-    "countryCode": "Country code",
+    "companyName": "Company name",
+    "zone": "Zone",
     "address": "Address",
     "phone": "Phone",
     "mobile": "Mobile",

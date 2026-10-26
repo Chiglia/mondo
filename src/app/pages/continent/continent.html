@@ -1,24 +1,15 @@
 <div
-  class="min-h-dvh bg-slate-50 flex flex-col font-sans text-slate-800"
+  class="h-[calc(100dvh-2.5rem)] min-h-0 overflow-hidden bg-slate-50 dark:bg-slate-950 flex flex-col font-sans text-slate-800 dark:text-slate-200"
   *transloco="let t"
 >
-  <app-header />
-
   @if (continent) {
-    <section class="bg-slate-900 text-white border-b border-slate-800">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-4 sm:gap-6">
-        <svg
-          [attr.viewBox]="continent.mapViewBox"
-          role="img"
-          [attr.aria-label]="t('continents.' + continent.id)"
-          class="w-24 h-24 sm:w-36 shrink-0 rounded-lg bg-slate-950 border border-slate-700"
-        >
-          <title>{{ t('continents.' + continent.id) }}</title>
-          <image href="/assets/images/world-map.svg" width="1000" height="500" />
-        </svg>
-
-        <div class="min-w-0 flex-1">
-          <a routerLink="/" class="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors mb-2">
+    <section class="shrink-0 bg-slate-900 text-white border-b border-slate-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+        <div class="min-w-0">
+          <a
+            routerLink="/"
+            class="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors mb-1"
+          >
             <i class="pi pi-arrow-left text-[10px]" aria-hidden="true"></i>
             {{ t('nav.map') }}
           </a>
@@ -26,67 +17,127 @@
             <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
               {{ t('continents.' + continent.id) }}
             </h1>
-            <span class="w-2.5 h-2.5 shrink-0 rounded-full" [style.backgroundColor]="continent.svgColor"></span>
+            <span
+              class="w-2.5 h-2.5 shrink-0 rounded-full"
+              [style.backgroundColor]="continent.svgColor"
+            ></span>
           </div>
-          <p class="text-xs text-slate-400 mt-1">
-            <span class="font-bold text-white tabular-nums">{{ isApiDirectoryLoading() ? '…' : (getNationCount() ?? '—') }}</span>
-            {{ t('common.nations') }}
-          </p>
         </div>
       </div>
     </section>
 
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4">
-      <div class="relative mb-3">
-        <i class="pi pi-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none" aria-hidden="true"></i>
-        <input
-          type="search"
-          [(ngModel)]="searchTerm"
-          (input)="applyFilters()"
-          [attr.aria-label]="t('continentPage.filterPlaceholder') + ' ' + t('continents.' + continent.id)"
-          [placeholder]="t('continentPage.filterPlaceholder') + ' ' + t('continents.' + continent.id) + '...'"
-          class="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 transition-colors"
-        />
-      </div>
+    <main
+      class="grid min-h-0 flex-1 w-full max-w-7xl grid-rows-[minmax(0,0.28fr)_minmax(0,0.72fr)] grid-cols-1 items-stretch gap-3 mx-auto px-4 py-3 sm:px-6 lg:grid-rows-1 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-6 lg:px-8"
+    >
+      <section
+        class="min-h-0 flex items-center justify-center"
+        [attr.aria-label]="t('continents.' + continent.id)"
+      >
+        <svg
+          [attr.viewBox]="continentMapViewBox()"
+          class="h-full max-h-full min-h-0 w-full"
+          role="img"
+          [attr.aria-label]="t('continents.' + continent.id)"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            #continentShape
+            [attr.d]="continentMapPath"
+            [attr.fill]="continent.svgColor"
+            stroke="#426174"
+            stroke-width="0.9"
+            stroke-linejoin="round"
+            fill-rule="evenodd"
+          />
+        </svg>
+      </section>
 
-      @if (isApiDirectoryLoading()) {
-        <div role="status" class="text-center py-8 bg-white border border-slate-200 rounded-xl text-sm text-slate-500">
-          {{ t('continentPage.loading') }}
+      <div class="flex min-h-0 min-w-0 flex-col">
+        <div class="relative mb-2 shrink-0">
+          <i
+            class="pi pi-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"
+            aria-hidden="true"
+          ></i>
+          <input
+            type="search"
+            [(ngModel)]="searchTerm"
+            (input)="applyFilters()"
+            [attr.aria-label]="
+              t('continentPage.filterPlaceholder') + ' ' + t('continents.' + continent.id)
+            "
+            [placeholder]="
+              t('continentPage.filterPlaceholder') + ' ' + t('continents.' + continent.id) + '...'
+            "
+            class="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 transition-colors"
+          />
         </div>
-      } @else if (apiDirectoryError()) {
-        <div class="text-center py-8 px-4 bg-white border border-red-200 rounded-xl" role="alert">
-          <h2 class="text-base font-bold text-slate-800">{{ t('common.loadError') }}</h2>
-          <p class="text-xs text-slate-500 mt-1">{{ apiDirectoryError() }}</p>
-          <button type="button" (click)="retryApiDirectoryLoad()" class="mt-4 px-3.5 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-lg">
-            {{ t('common.retry') }}
-          </button>
-        </div>
-      } @else if (filteredNations.length > 0) {
-        <div class="grid grid-cols-1 min-[400px]:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
-          @for (n of filteredNations; track n.codice) {
+
+        @if (isApiDirectoryLoading()) {
+          <div
+            role="status"
+            class="text-center py-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-500 dark:text-slate-300"
+          >
+            {{ t('continentPage.loading') }}
+          </div>
+        } @else if (apiDirectoryError()) {
+          <div
+            class="text-center py-8 px-4 bg-white dark:bg-slate-900 border border-red-200 dark:border-red-900 rounded-xl"
+            role="alert"
+          >
+            <h2 class="text-base font-bold text-slate-800 dark:text-slate-100">
+              {{ t('common.loadError') }}
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-300 mt-1">{{ apiDirectoryError() }}</p>
             <button
               type="button"
-              (click)="selectNation(n)"
-              [attr.aria-label]="n.descrizione + ' - ' + t('continentPage.showCommissioners')"
-              class="group flex items-center gap-2 min-h-12 px-3 py-2 text-left bg-white border border-slate-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-colors cursor-pointer"
+              (click)="retryApiDirectoryLoad()"
+              class="mt-4 px-3.5 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-lg"
             >
-              @if (n.codice) {
-                <span class="shrink-0 text-[10px] text-slate-500 font-mono">{{ n.codice }}</span>
-              }
-              <span class="min-w-0 flex-1 text-xs font-semibold text-slate-900 leading-4 break-words">{{ n.descrizione }}</span>
-              <i class="pi pi-angle-right shrink-0 text-xs text-slate-400 group-hover:text-blue-600" aria-hidden="true"></i>
+              {{ t('common.retry') }}
             </button>
-          }
-        </div>
-      } @else {
-        <div class="text-center py-8 px-4 bg-white border border-slate-200 rounded-xl">
-          <i class="pi pi-search text-2xl text-slate-300 mb-3" aria-hidden="true"></i>
-          <h2 class="text-base font-bold text-slate-800">{{ t('continentPage.noNations') }}</h2>
-          <p class="text-xs text-slate-500 mt-1">
-            {{ t('continentPage.noNationsDescription') }} "{{ searchTerm }}".
-          </p>
-        </div>
-      }
+          </div>
+        } @else if (filteredNations.length > 0) {
+          <div
+            class="grid min-h-0 flex-1 content-start grid-cols-[repeat(auto-fit,minmax(4rem,1fr))] gap-1 overflow-hidden min-[640px]:grid-cols-[repeat(auto-fit,minmax(8.5rem,1fr))]"
+          >
+            @for (n of filteredNations; track n.codice) {
+              <button
+                type="button"
+                (click)="selectNation(n)"
+                [attr.aria-label]="n.descrizione + ' - ' + t('continentPage.showCommissioners')"
+                [attr.title]="n.descrizione"
+                class="group flex min-h-8 min-w-0 items-center gap-1.5 px-2 py-1 text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-colors cursor-pointer"
+              >
+                @if (n.codice) {
+                  <span class="shrink-0 text-[9px] text-slate-500 dark:text-slate-400 font-mono">{{
+                    n.codice
+                  }}</span>
+                }
+                <span
+                  class="min-w-0 flex-1 truncate text-[11px] font-semibold text-slate-900 dark:text-slate-100 leading-4"
+                  >{{ n.descrizione }}</span
+                >
+                <i
+                  class="pi pi-angle-right shrink-0 text-xs text-slate-400 group-hover:text-blue-600"
+                  aria-hidden="true"
+                ></i>
+              </button>
+            }
+          </div>
+        } @else {
+          <div
+            class="text-center py-8 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl"
+          >
+            <i class="pi pi-search text-2xl text-slate-300 mb-3" aria-hidden="true"></i>
+            <h2 class="text-base font-bold text-slate-800 dark:text-slate-100">
+              {{ t('continentPage.noNations') }}
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-300 mt-1">
+              {{ t('continentPage.noNationsDescription') }} "{{ searchTerm }}".
+            </p>
+          </div>
+        }
+      </div>
     </main>
   }
 
@@ -98,6 +149,4 @@
     (retry)="retryCommissionersLoad()"
     (close)="closeNationDetails()"
   />
-
-  <app-footer [compact]="true" />
 </div>

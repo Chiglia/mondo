@@ -10,6 +10,10 @@
     "switchToEnglish": "Cambia la lingua in inglese",
     "switchToItalian": "Cambia la lingua in italiano"
   },
+  "theme": {
+    "switchToDark": "Passa al tema scuro",
+    "switchToLight": "Passa al tema chiaro"
+  },
   "nav": {
     "map": "Mappa globale"
   },
@@ -21,13 +25,13 @@
     "oceania": "Oceania"
   },
   "home": {
-    "eyebrow": "Perizie marittime in tutto il mondo",
-    "title": "Rete globale dei Commissari d'Avaria",
+    "eyebrow": "Cosa fare in caso di sinistro",
+    "title": "Commissari d'avaria",
     "commissioners": "Commissari",
     "heroImageAlt": "Nave e porto commerciale"
   },
   "map": {
-    "title": "Rete geografica mondiale",
+    "title": "Scegli l'area di interesse",
     "subtitle": "Seleziona un continente per consultare le nazioni",
     "northAmerica": "America del Nord",
     "southAmerica": "America del Sud",
@@ -50,7 +54,8 @@
   "commissioner": {
     "loading": "Caricamento dei commissari...",
     "title": "Commissari in",
-    "countryCode": "Codice nazione",
+    "companyName": "Ragione sociale",
+    "zone": "Zona",
     "address": "Indirizzo",
     "phone": "Telefono",
     "mobile": "Cellulare",
