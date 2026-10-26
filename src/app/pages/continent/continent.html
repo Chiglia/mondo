@@ -30,13 +30,13 @@
       class="grid min-h-0 flex-1 w-full max-w-7xl grid-rows-[minmax(0,0.28fr)_minmax(0,0.72fr)] grid-cols-1 items-stretch gap-3 mx-auto px-4 py-3 sm:px-6 lg:grid-rows-1 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-6 lg:px-8"
     >
       <section
-        class="min-h-0 flex items-center justify-center"
+        class="relative min-h-0 flex items-center justify-center"
         [attr.aria-label]="t('continents.' + continent.id)"
       >
         <svg
           [attr.viewBox]="continentMapViewBox()"
           class="h-full max-h-full min-h-0 w-full"
-          role="img"
+          role="group"
           [attr.aria-label]="t('continents.' + continent.id)"
           xmlns="http://www.w3.org/2000/svg"
         >
@@ -49,7 +49,56 @@
             stroke-linejoin="round"
             fill-rule="evenodd"
           />
+          @for (region of continentNationMapRegions(); track region.code) {
+            @if (region.nation) {
+              <path
+                [attr.d]="region.path"
+                [attr.fill]="continent.svgColor"
+                class="country-shape selectable"
+                [class.selected]="
+                  region.codes.includes(selectedNation?.codice?.trim()?.toUpperCase() ?? '')
+                "
+                role="button"
+                tabindex="0"
+                [attr.aria-label]="region.nation.descrizione"
+                (mouseenter)="showNationTooltip(region.nation)"
+                (mouseleave)="hideNationTooltip()"
+                (focus)="showNationTooltip(region.nation)"
+                (blur)="hideNationTooltip()"
+                (click)="selectMapNation(region.nation)"
+                (keydown.enter)="selectMapNation(region.nation)"
+                (keydown.space)="selectMapNation(region.nation); $event.preventDefault()"
+              />
+            }
+          }
         </svg>
+        @if (hoveredNation(); as nation) {
+          <div
+            class="pointer-events-none absolute bottom-3 left-3 z-10 max-w-[calc(100%-1.5rem)] rounded-xl border border-slate-700/80 bg-slate-900/95 px-4 py-3 text-white shadow-xl backdrop-blur-md"
+            [attr.role]="hoveredNationError() ? 'alert' : 'status'"
+            aria-live="polite"
+          >
+            <p class="text-xs font-mono font-semibold uppercase text-blue-400">
+              {{ nation.descrizione }}
+            </p>
+            @if (isHoveredNationLoading()) {
+              <p class="mt-1 text-xs text-slate-300">{{ t('commissioner.loading') }}</p>
+            } @else if (hoveredNationError()) {
+              <p class="mt-1 text-xs text-red-200">
+                {{ t('common.loadError') }}: {{ hoveredNationError() }}
+              </p>
+            } @else if (hoveredNationCommissionerCount() !== null) {
+              <p class="mt-1 text-xs text-slate-300 tabular-nums">
+                <strong class="text-white">{{ hoveredNationCommissionerCount() }}</strong>
+                {{
+                  hoveredNationCommissionerCount() === 1
+                    ? t('home.commissioner')
+                    : t('home.commissioners')
+                }}
+              </p>
+            }
+          </div>
+        }
       </section>
 
       <div class="flex min-h-0 min-w-0 flex-col">

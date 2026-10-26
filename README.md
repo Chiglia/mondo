@@ -51,6 +51,13 @@ and shows its translated name in the information panel. Click or Enter opens tha
 continent. Interactive boundaries follow the visible country outlines, not
 approximate hit boxes.
 
+Continent pages use per-country Natural Earth boundaries from
+`src/app/data/country-map-regions.data.ts`. Countries returned by the directory API
+are clickable and keyboard-selectable on the map; hovering or focusing a country
+shows its name and commissioner count. The count uses the cached `getCommissari`
+result, which also powers the details opened by selecting that country from the map
+or list.
+
 The home page makes five statistics API requests in parallel at startup:
 `ConsultazioneService.getStatistiche()` for each continent (`AF`, `AM`, `AS`, `EU`,
 `OC`). The map hover panel shows each continent's nation and commissioner totals.
